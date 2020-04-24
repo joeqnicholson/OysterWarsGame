@@ -174,6 +174,31 @@ public partial class WadeMachine : MonoBehaviour
         return Vector3.SignedAngle(gun.forward, Motor.CharacterForward, camF);
 
     }
+    void ShootControls()
+    {
+        if (Input.GetAxisRaw("RightTrigger") != 0)
+        {
+            if (triggerInUse == false)
+            {
+                if (bullets == 0)
+                {
+                    reloading = true;
+                    shotTimer = 0;
+                }
+                else if (canShoot)
+                {
+                    Instantiate(bullet, gun.position, gun.rotation);
+                    bullets -= 1;
+                    shotTimer = 0;
+                    triggerInUse = true;
+                }
+            }
+        }
+        if (Input.GetAxisRaw("RightTrigger") == 0)
+        {
+            triggerInUse = false;
+        }
+    }
 
     void Shooting()
     {
@@ -194,8 +219,7 @@ public partial class WadeMachine : MonoBehaviour
 
             if (Input.GetButtonDown("Shoot"))
             {
-                reloading = true;
-                shotTimer = 0;
+                
             }
         }
 
@@ -205,20 +229,22 @@ public partial class WadeMachine : MonoBehaviour
             reloading = false;
         }
 
-        if (Input.GetButtonDown("Shoot") && canShoot)
-        {
-            Instantiate(bullet, gun);
-            bullets -= 1;
-            shotTimer = 0;
-        }
 
-        if (reloading)
+        
+
+
+        if (reloading )
         {
-            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, reloadWalkSpeed, 5 * Time.deltaTime);
+            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, reloadWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
+        }
+        else if (stateString == "Aim")
+        {
+            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, aimWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
+
         }
         else
         {
-            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, walkSpeed, 5 * Time.deltaTime);
+            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, walkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
         }
 
 
@@ -233,7 +259,16 @@ public partial class WadeMachine : MonoBehaviour
         if (!lockedOn)
         {
             PlayerAnimator.SetBool("LockedOn", false);
-            gun.rotation = transform.rotation;
+           
+
+            if (stateString == "AirAction")
+            {
+                gun.rotation = gunParentBone.rotation;
+            }
+            else
+            {
+                gun.rotation = transform.rotation;
+            }
         }
         else
         {
@@ -244,7 +279,7 @@ public partial class WadeMachine : MonoBehaviour
             Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
 
 
-            if (lockOnAngle < Mathf.Abs(104))
+            if (stateString == "Aim")
             {
                 gun.rotation = lookRotation;
             }
