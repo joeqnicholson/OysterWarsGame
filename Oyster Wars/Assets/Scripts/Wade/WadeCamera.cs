@@ -42,11 +42,17 @@ public class WadeCamera : MonoBehaviour
     public float heading;
     public float orbitSpeed;
     public float autoOrbitSpeed;
+    public float boatAutoOrbitSpeed;
+    public float boatOrbit;
+    public float boatDistance;
+    public float aimDistance;
+    public float aimTilt;
     //private SuperCharacterController controller;
     public float lockOnDistance;
     public float lockOnHeight;
     public float pullbackSpeed;
     public float offsetY;
+    
     public bool cube = true;
     int num = 1;
 
@@ -55,7 +61,6 @@ public class WadeCamera : MonoBehaviour
 
     private void Awake()
     {
-        Distance = Mathf.Clamp(Distance, minDistance, maxDistance);
         targetDistance = Distance;
 
     }
@@ -71,7 +76,7 @@ public class WadeCamera : MonoBehaviour
         target = followTarget.transform;
 
     }
-    private void LateUpdate()
+    private void Update()
     {
         LockOnControls();
         //HandleCollision();
@@ -83,20 +88,65 @@ public class WadeCamera : MonoBehaviour
         {
             tilt = Mathf.Clamp(tilt, 360, 410);
 
-            if (Mathf.Abs(input.Current.MouseInput.y) > 0.01f) { tilt += input.Current.MouseInput.y * orbitSpeed * Time.deltaTime; }
 
-            if (Mathf.Abs(input.Current.MouseInput.x) > 0.01f) { heading += input.Current.MouseInput.x * orbitSpeed * Time.deltaTime; }
+            if(machine.stateString != "Aim")
+            {
+                if (Mathf.Abs(input.Current.MouseInput.y) > 0.01f) { tilt += input.Current.MouseInput.y * orbitSpeed * Time.deltaTime; }
+
+                if (Mathf.Abs(input.Current.MouseInput.x) > 0.01f) { heading += input.Current.MouseInput.x * orbitSpeed * Time.deltaTime; }
+
+            }
+
 
             if (machine.stateString == "Walk")
             {
+                if(input.Current.MouseInput.magnitude < 0.1f)
+                {
+                    if (Mathf.Abs(input.Current.MoveInput.x) > 0.1f)
+                    {
+
+
+                        heading += autoOrbitSpeed * input.Current.MoveInput.x * Time.deltaTime;
+                    }
+                }
+                
+            }
+
+
+            if (machine.stateString == "Drive")
+            {
+                
                 if (Mathf.Abs(input.Current.MoveInput.x) > 0.1f)
                 {
-                    heading += autoOrbitSpeed * input.Current.MoveInput.x * Time.deltaTime;
+                    
+
+                    boatOrbit = Mathf.Lerp(boatOrbit, boatAutoOrbitSpeed, 4 * Time.deltaTime);
+                    if (input.Current.MouseInput.magnitude < 0.1f)
+                    {
+                        heading += boatOrbit * input.Current.MoveInput.x * Time.deltaTime;
+
+                    }
                 }
+                else
+                {
+                    boatOrbit = 0;
+
+                }
+                Distance = Mathf.Lerp(Distance, boatDistance, 6 * Time.deltaTime);
+            }
+            else if (machine.stateString == "Aim")
+            {
+                heading = Mathf.LerpAngle(heading, PlayerTarget.transform.localRotation.eulerAngles.y, 9 * Time.deltaTime);
+                tilt = Mathf.Lerp(tilt, aimTilt, 9 * Time.deltaTime);
+                Distance = Mathf.Lerp(Distance, aimDistance, 6 * Time.deltaTime);
+            }
+            else
+            {
+                Distance = Mathf.Lerp(Distance, maxDistance, 6 * Time.deltaTime);
             }
 
             Quaternion desiredRot = Quaternion.Euler(tilt, heading, 0);
-            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRot, 8f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRot, 7f * Time.deltaTime);
 
             Vector3 desiredPos = target.position - transform.forward * Distance;
             transform.position = desiredPos + Vector3.up * offsetY;

@@ -8,7 +8,7 @@ using System;
 
 public enum CharacterState
 {
-    Idle, Walk, Jump, Crouch, LedgeGrab, WallSlide, AirAction, Drive
+    Idle, Walk, Jump, Crouch, LedgeGrab, WallSlide, AirAction, Drive, Aim
 }
 
 //[RequireComponent(typeof(WadeInputs))]  
@@ -33,6 +33,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public float turnSpeedFast;
     public float turnSpeedSlow;
     public float turnSpeed;
+    public float walkSpeedsTransitionTime;
 
 
     [Header("Jumping")]
@@ -47,7 +48,6 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     float maxJumpVelocity;
     float minJumpVelocity;
     public float maxVM;
-    public float smaxVM;
     public float minVM;
 
 
@@ -67,6 +67,11 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public float reloadWalkSpeed;
     public bool reloading;
     public bool canShoot;
+    public bool triggerInUse;
+    public float aimFollowTime;
+    public float aimWalkSpeed;
+    public bool lockedOn = false;
+
 
     [Header("WallSlide")]
     public float wallSlideSpeed;
@@ -88,7 +93,6 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
 
     float num = 1;
-    bool lockedOn = false;
 
     public float linearDrag = 5;
 
@@ -103,6 +107,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public GameObject PlayerMesh;
     public Transform lockOnTarget;
     public Transform gun;
+    public Transform gunParentBone;
     public LedgeDetect ledge;
     public Transform camFollow;
     public GameObject bullet;
@@ -129,7 +134,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         TransitionToState(CharacterState.Idle);
         wadeboat = GameObject.Find("wadeboat").GetComponent<Vehicle>();
         //input = PlayerTarget.GetComponent<WadeInputs>();
-
+        
     }
 
     /// <summary>
@@ -203,6 +208,11 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     PlayerAnimator.SetBool(currentAirProfile.Animation, true);
                     break;
                 }
+            case CharacterState.Aim:
+                {
+                    PlayerAnimator.SetBool("Aim", true);
+                    break;
+                }
 
         }
     }
@@ -264,6 +274,12 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     PlayerAnimator.SetBool(currentAirProfile.Animation, false);
                     break;
                 }
+                case CharacterState.Aim:
+                {
+                    PlayerAnimator.SetBool("Aim", false);
+                    break;
+                }
+
 
         }
     }
@@ -281,7 +297,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     {
         blendAngle = Vector3.Angle(transform.forward, LocalMovement()) * input.Current.MoveInput.x;
         angle = Vector3.Angle(transform.forward, LocalMovement());
-
+        stateString = CurrentCharacterState.ToString();
 
 
         Time.timeScale = timeScale;
@@ -297,6 +313,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         {
             case CharacterState.Idle:
                 {
+                    ShootControls();
+
                     if (canDrive)
                     {
                         if (Input.GetButtonDown("Action"))
@@ -304,6 +322,11 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                             wadeboat.controllable = true;
                             TransitionToState(CharacterState.Drive);
                         }
+                    }
+
+                    if(Input.GetAxisRaw("LeftTrigger") != 0)
+                    {
+                        TransitionToState(CharacterState.Aim);
                     }
                     
 
@@ -328,6 +351,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
             case CharacterState.Walk:
                 {
 
+                    ShootControls();
+
                     if (canDrive)
                     {
                         if (Input.GetButtonDown("Action"))
@@ -335,6 +360,11 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                             wadeboat.controllable = true;
                             TransitionToState(CharacterState.Drive);
                         }
+                    }
+
+                    if (Input.GetAxisRaw("LeftTrigger") > 0.1f)
+                    {
+                        TransitionToState(CharacterState.Aim);
                     }
 
                     PlayerAnimator.SetFloat("Angle", blendAngle);
@@ -452,34 +482,73 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         //{
                         //    slamTimer -= 4000f;
                         //}
-                        
+
                         //{
                         //    currentJumpProfile = sparkSlam;
                         //    TransitionToState(CharacterState.Jump);
                         //}
 
-
-                        if (input.Current.RightBumperInput && Input.GetButton("Slash"))
+                        if (Input.GetAxisRaw("RightTrigger") != 0 && Input.GetButton("Slash"))
                         {
-                            currentJumpProfile = sparkSlam;
-                            TransitionToState(CharacterState.Jump);
+                            if (triggerInUse == false)
+                            {
+                                if (canShoot)
+                                {
+                                    Instantiate(bullet, gun.position, gun.rotation);
+                                    bullets -= 1;
+                                    shotTimer = 0;
+                                    currentJumpProfile = sparkSlam;
+                                    TransitionToState(CharacterState.Jump);
+                                    triggerInUse = true;
+                                }
+                            }
                         }
-                        else if (input.Current.RightBumperInput)
+                        if (Input.GetAxisRaw("RightTrigger") != 0)
                         {
-                            currentJumpProfile = frontFlip;
-                            TransitionToState(CharacterState.Jump);
+                            if (canShoot)
+                            {
+                                Instantiate(bullet, gun.position, gun.rotation);
+                                bullets -= 1;
+                                shotTimer = 0;
+                                currentJumpProfile = frontFlip;
+                                TransitionToState(CharacterState.Jump);
+                                triggerInUse = true;
+                            }
                         }
-
-
+                        if (Input.GetAxisRaw("RightTrigger") == 0)
+                        {
+                            triggerInUse = false;
+                        }
                     }
 
                     break;
 
                 }
-
             case CharacterState.Drive:
                 {
-                    
+                    if (Input.GetButtonDown("Action"))
+                    {
+                        TransitionToState(CharacterState.Idle);
+                        wadeboat.controllable = false;
+                    }
+
+                    break;
+
+                }
+            case CharacterState.Aim:
+                {
+                    ShootControls();
+
+                    if (!Motor.GroundingStatus.FoundAnyGround)
+                    {
+                        currentJumpProfile = groundFall;
+                        TransitionToState(CharacterState.Jump);
+                    }
+
+                    if (Input.GetAxisRaw("LeftTrigger") < 0.1f)
+                    {
+                        TransitionToState(CharacterState.Idle);
+                    }
 
                     break;
 
@@ -561,6 +630,20 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
             case CharacterState.Drive:
                 {
 
+
+                    break;
+
+                }
+            case CharacterState.Aim:
+                {
+                    if (lockedOn)
+                    {
+                        Vector3 lockOnRotation = (lockOnTarget.position - transform.position);
+                        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+                        lookRotation.x = 0;
+                        lookRotation.z = 0;
+                        currentRotation = Quaternion.Slerp(currentRotation, lookRotation, aimFollowTime * Time.deltaTime);
+                    }
 
                     break;
 
@@ -749,10 +832,17 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Drive:
                 {
-
+                    currentVelocity = Vector3.Lerp(currentVelocity, transform.forward * moveSpeed, 10 * deltaTime);
                     moveSpeed = Mathf.Lerp(moveSpeed, 0, walkDecel  * Time.deltaTime);
                     break;
 
+                }
+            case CharacterState.Aim:
+                {
+
+                    moveSpeed = Mathf.Lerp(moveSpeed, correctedWalkSpeed, walkAccel * Time.deltaTime);
+                    currentVelocity = Vector3.Lerp(currentVelocity, LocalMovement() * moveSpeed, 10 * deltaTime);
+                    break;
                 }
         }
     }
