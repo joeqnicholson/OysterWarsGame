@@ -52,7 +52,9 @@ public class WadeCamera : MonoBehaviour
     public float lockOnHeight;
     public float pullbackSpeed;
     public float offsetY;
-    
+    public float aimMovement;
+    public Vector3 aimMovementDifference;
+
     public bool cube = true;
     int num = 1;
 
@@ -158,14 +160,13 @@ public class WadeCamera : MonoBehaviour
 
             float lockHeading = lockOnInstance.transform.localRotation.eulerAngles.y;
 
-            float lockTilt = lockOnInstance.transform.localRotation.eulerAngles.x;
-            //lockTilt = Mathf.Clamp(lockTilt, 330, 100000);
+            float lockTilt = lockOnInstance.transform.localRotation.eulerAngles.x + 20;
+
             tilt = Mathf.Clamp(tilt, 350, 440);
 
+            heading = Mathf.LerpAngle(heading, lockHeading, 5 * Time.deltaTime);
 
-            heading = Mathf.LerpAngle(heading + (input.Current.MouseInput.x * 5), lockHeading + (input.Current.MouseInput.x * 300), 5 * Time.deltaTime);
-
-            tilt = Mathf.LerpAngle(tilt + (input.Current.MouseInput.y * 5), lockTilt + (input.Current.MouseInput.y * 30) + 18, 5 * Time.deltaTime);
+            tilt = Mathf.LerpAngle(tilt, lockTilt, 5 * Time.deltaTime);
 
             Distance = Mathf.Lerp(Distance, lockOnDistance, 2f * Time.deltaTime);
 
@@ -174,8 +175,6 @@ public class WadeCamera : MonoBehaviour
             Vector3 desiredPos = target.position - transform.forward * Distance;
 
             transform.position = desiredPos + Vector3.up * offsetY;
-
-
 
 
         }
@@ -213,15 +212,43 @@ public class WadeCamera : MonoBehaviour
             num++;
         }
 
+        float meshSize = (lockOnTarget.GetComponent<CapsuleCollider>().bounds.size * lockOnTarget.localScale.x).magnitude;
+
+        aimMovementDifference = (Vector3.up * -input.Current.MouseInput.y + transform.right.normalized * input.Current.MouseInput.x) * meshSize;
+        //aimMovementDifference = Vector3.ClampMagnitude(aimMovementDifference, meshSize * 2000);
 
         if (num % 2 == 0)
         {
             lockedOn = true;
+
             if (cube == false)
             {
-                lockOnInstance = Instantiate(lockOnIndicator, lockOnTarget.position + Vector3.up * 2, Quaternion.Euler(0, 0, 0));
+                lockOnInstance = Instantiate(lockOnIndicator, lockOnTarget.position, Quaternion.Euler(0, 0, 0));
 
                 cube = true;
+            }
+
+            if (cube == true)
+            {
+                if(Input.GetAxisRaw("LeftTrigger") > 0.01f)
+                {
+                    
+
+                    if (Mathf.Abs(input.Current.MouseInput.y) > 0.001f || Mathf.Abs(input.Current.MouseInput.x) > 0.001f)
+                    {
+                        lockOnInstance.transform.position = lockOnTarget.transform.position + aimMovementDifference;
+                    }
+                    else
+                    {
+                        lockOnInstance.transform.position = Vector3.Lerp(lockOnInstance.transform.position, lockOnTarget.transform.position, 8 * Time.deltaTime);
+                    }
+
+                }
+                else
+                {
+                    lockOnInstance.transform.position = Vector3.Lerp(lockOnInstance.transform.position, lockOnTarget.transform.position, 8 * Time.deltaTime);
+                }
+
             }
 
             Vector3 lockOnRotation = (lockOnInstance.transform.position - target.position);

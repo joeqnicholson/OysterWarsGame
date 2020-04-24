@@ -82,6 +82,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public bool comingFromWallSlide;
 
     [Header("CamStats")]
+    public GameObject camera;
     public Transform cam;
     public Vector3 camF;
     public Vector3 camR;
