@@ -258,8 +258,6 @@ public partial class WadeMachine : MonoBehaviour
 
         if (!lockedOn)
         {
-            PlayerAnimator.SetBool("LockedOn", false);
-           
 
             if (stateString == "AirAction")
             {
@@ -272,15 +270,16 @@ public partial class WadeMachine : MonoBehaviour
         }
         else
         {
-            PlayerAnimator.SetBool("LockedOn", true);
+            Transform cubeTarget;
+            cubeTarget = camera.GetComponent<WadeCamera>().lockOnInstance.transform;
 
-            lockOnAngle = lockOnAngles();
-            Vector3 lockOnRotation = (lockOnTarget.position - gun.position);
+            Vector3 lockOnRotation = (cubeTarget.position - gun.position);
             Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
 
 
             if (stateString == "Aim")
             {
+                Debug.DrawLine(gun.position, cubeTarget.position, Color.red);
                 gun.rotation = lookRotation;
             }
             else
