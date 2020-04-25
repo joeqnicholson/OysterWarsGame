@@ -26,6 +26,7 @@ public class WadeCamera : MonoBehaviour
     private float targetDistance { get; set; }
     public float lockTilt;
     public float cachedDistance;
+    public bool triggerInUse;
 
 
     public GameObject PlayerTarget;
@@ -69,7 +70,7 @@ public class WadeCamera : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        lockOnInstance = Instantiate(lockOnIndicator, PlayerTarget.transform.position + transform.forward * 50, PlayerTarget.transform.rotation);
         Vector3 rot = transform.localRotation.eulerAngles;
         heading = rot.y;
         tilt = 360;
@@ -138,9 +139,9 @@ public class WadeCamera : MonoBehaviour
             }
             else if (machine.stateString == "Aim")
             {
-                heading = Mathf.LerpAngle(heading, PlayerTarget.transform.localRotation.eulerAngles.y, 9 * Time.deltaTime);
-                tilt = Mathf.Lerp(tilt, aimTilt, 9 * Time.deltaTime);
-                Distance = Mathf.Lerp(Distance, aimDistance, 6 * Time.deltaTime);
+                //heading = mathf.lerpangle(heading, playertarget.transform.localrotation.eulerangles.y, 9 * time.deltatime);
+                //tilt = mathf.lerp(tilt, aimtilt, 9 * time.deltatime);
+                //distance = mathf.lerp(distance, aimdistance, 6 * time.deltatime);
             }
             else
             {
@@ -207,49 +208,36 @@ public class WadeCamera : MonoBehaviour
 
     void LockOnControls()
     {
-        if (input.Current.LockOnInput)
+
+
+        if (Input.GetButtonDown("LeftBumper"))
         {
             num++;
         }
 
-        float meshSize = (lockOnTarget.GetComponent<CapsuleCollider>().bounds.size * lockOnTarget.localScale.x).magnitude;
+        if (Input.GetAxisRaw("LeftTrigger") != 0)
+        {
+            if(triggerInUse == false)
+            {
+                triggerInUse = true;
+            }
+            
+            
+        }
+        if (Input.GetAxisRaw("LeftTrigger") == 0)
+        {
+            if(triggerInUse == true)
+            {
+                triggerInUse = false;
+            }
+            
+        }
 
-        aimMovementDifference = (Vector3.up * -input.Current.MouseInput.y + transform.right.normalized * input.Current.MouseInput.x) * meshSize;
-        //aimMovementDifference = Vector3.ClampMagnitude(aimMovementDifference, meshSize * 2000);
-
-        if (num % 2 == 0)
+        if (machine.lockedOn)
         {
             lockedOn = true;
 
-            if (cube == false)
-            {
-                lockOnInstance = Instantiate(lockOnIndicator, lockOnTarget.position, Quaternion.Euler(0, 0, 0));
-
-                cube = true;
-            }
-
-            if (cube == true)
-            {
-                if(Input.GetAxisRaw("LeftTrigger") > 0.01f)
-                {
-                    
-
-                    if (Mathf.Abs(input.Current.MouseInput.y) > 0.001f || Mathf.Abs(input.Current.MouseInput.x) > 0.001f)
-                    {
-                        lockOnInstance.transform.position = lockOnTarget.transform.position + aimMovementDifference;
-                    }
-                    else
-                    {
-                        lockOnInstance.transform.position = Vector3.Lerp(lockOnInstance.transform.position, lockOnTarget.transform.position, 8 * Time.deltaTime);
-                    }
-
-                }
-                else
-                {
-                    lockOnInstance.transform.position = Vector3.Lerp(lockOnInstance.transform.position, lockOnTarget.transform.position, 8 * Time.deltaTime);
-                }
-
-            }
+            lockOnInstance.transform.position = lockOnTarget.position;
 
             Vector3 lockOnRotation = (lockOnInstance.transform.position - target.position);
 
@@ -260,12 +248,15 @@ public class WadeCamera : MonoBehaviour
         }
         else
         {
-            if (lockOnInstance)
-            {
-                Destroy(lockOnInstance);
-            }
+            Vector3 lockOnRotation = (lockOnInstance.transform.position - target.position);
+
+            Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+
+            lockOnInstance.transform.rotation = lookRotation;
+
+            lockOnInstance.transform.position = PlayerTarget.transform.position + transform.forward * 50;
             lockedOn = false;
-            cube = false;
+
         }
 
 

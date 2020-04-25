@@ -35,16 +35,7 @@ public partial class WadeMachine : MonoBehaviour
         timeToJumpApex = .4f,
     };
 
-    private JumpProfile shotStandard = new JumpProfile
-    {
-        Animation = "Jump",
-        CanControlHeight = true,
-        JumpHeight = 3.5f,
-        timeToJumpApex = .35f,
-        inAir = true,
-        planarMultiplier = 1,
-
-    };
+    
 
     private JumpProfile jumpWall = new JumpProfile
     {
@@ -92,20 +83,16 @@ public partial class WadeMachine : MonoBehaviour
         Animation = "Fall",
     };
 
-
-
     public class AirProfile
     {
         public string Animation;
-        public JumpProfile jump;
+        public float DashLength = 0;
+
     }
 
     public AirProfile currentAirProfile;
 
-
-
     private AirProfile slashProfile = new AirProfile
-
     {
         Animation = "AirSlash"
     };
@@ -180,23 +167,33 @@ public partial class WadeMachine : MonoBehaviour
         {
             if (triggerInUse == false)
             {
-                if (bullets == 0)
-                {
-                    reloading = true;
-                    shotTimer = 0;
-                }
-                else if (canShoot)
+                if (canShoot)
                 {
                     Instantiate(bullet, gun.position, gun.rotation);
                     bullets -= 1;
                     shotTimer = 0;
                     triggerInUse = true;
+                    audio.Play();
                 }
             }
         }
         if (Input.GetAxisRaw("RightTrigger") == 0)
         {
             triggerInUse = false;
+        }
+
+        if (bullets < clipSize)
+        {
+            if (Input.GetButtonDown("Action"))
+            {
+                reloading = true;
+            }
+
+            if (Input.GetButtonUp("Action"))
+            {
+                reloading = false;
+                shotTimer = 0;
+            }
         }
     }
 
@@ -216,14 +213,15 @@ public partial class WadeMachine : MonoBehaviour
         if (bullets == 0)
         {
             canShoot = false;
-
-            if (Input.GetButtonDown("Shoot"))
-            {
-                
-            }
         }
 
         if (shotTimer > reloadSpeed && reloading)
+        {
+            bullets += 1;
+            shotTimer = 0;
+        }
+
+        if (bullets == clipSize && reloading)
         {
             bullets = clipSize;
             reloading = false;
@@ -237,11 +235,10 @@ public partial class WadeMachine : MonoBehaviour
         {
             correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, reloadWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
         }
-        else if (stateString == "Aim")
+        else if (lockedOn)
         {
-            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, aimWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
-
-        }
+            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, LockOnWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
+        } 
         else
         {
             correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, walkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
@@ -249,12 +246,6 @@ public partial class WadeMachine : MonoBehaviour
 
 
 
-        if (Input.GetButtonDown("LockOn")) { num++; }
-
-        //shotTimer += Time.deltaTime;
-
-        if (num % 2 == 0) { lockedOn = true; }
-        else { lockedOn = false; }
 
         if (!lockedOn)
         {
@@ -270,22 +261,21 @@ public partial class WadeMachine : MonoBehaviour
         }
         else
         {
-            Transform cubeTarget;
-            cubeTarget = camera.GetComponent<WadeCamera>().lockOnInstance.transform;
-
-            Vector3 lockOnRotation = (cubeTarget.position - gun.position);
-            Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
-
-
-            if (stateString == "Aim")
+            if (stateString == "AirAction")
             {
+                Transform cubeTarget;
+                cubeTarget = camera.GetComponent<WadeCamera>().lockOnInstance.transform;
+
+                Vector3 lockOnRotation = (cubeTarget.position - gun.position);
+                Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
                 Debug.DrawLine(gun.position, cubeTarget.position, Color.red);
                 gun.rotation = lookRotation;
             }
             else
             {
-                gun.rotation = transform.rotation;
+                gun.rotation = gunParentBone.rotation;
             }
+
 
         }
 
