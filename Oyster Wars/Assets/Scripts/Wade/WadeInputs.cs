@@ -26,8 +26,8 @@ public class WadeInputs : MonoBehaviour
         Vector2 mouseInput = new Vector2(-Input.GetAxis("Mouse X"), -Input.GetAxis("Mouse Y"));
 
         bool jumpInput = Input.GetButtonDown("Jump");
-        bool crouchInput = Input.GetButton("Crouch");
-        bool crouchInputDown = Input.GetButtonDown("Crouch");
+        //bool crouchInput = Input.GetButton("Crouch");
+        //bool crouchInputDown = Input.GetButtonDown("Crouch");
         bool lockOnInput = Input.GetButtonDown("LockOn");
         bool shootInput = Input.GetButtonDown("Shoot");
         bool slashInput = Input.GetButtonDown("Slash");
@@ -39,8 +39,8 @@ public class WadeInputs : MonoBehaviour
             SparkMoveInput = sparkMoveInput,
             MouseInput = mouseInput,
             JumpInput = jumpInput,
-            CrouchInput = crouchInput,
-            CrouchInputDown = crouchInputDown,
+            //CrouchInput = crouchInput,
+            //CrouchInputDown = crouchInputDown,
             LockOnInput = lockOnInput,
             ShootInput = shootInput,
             SlashInput = slashInput,
@@ -56,10 +56,10 @@ public struct PlayerInput
     public Vector3 SparkMoveInput;
     public Vector2 MouseInput;
     public bool JumpInput;
-    public bool CrouchInput;
+    //public bool CrouchInput;
     public bool LockOnInput;
     public bool ShootInput;
     public bool SlashInput;
     public bool RightBumperInput;
-    public bool CrouchInputDown;
+    //public bool CrouchInputDown;
 }

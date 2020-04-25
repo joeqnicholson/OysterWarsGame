@@ -8,7 +8,7 @@ using System;
 
 public enum CharacterState
 {
-    Idle, Walk, Jump, Crouch, LedgeGrab, WallSlide, AirAction, Drive, Aim
+    Idle, Walk, Jump, Crouch, LedgeGrab, WallSlide, AirAction, Drive, LockOn, Dash
 }
 
 //[RequireComponent(typeof(WadeInputs))]  
@@ -52,10 +52,21 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
 
 
-    [Header("AirSlash")]
+    [Header("AirActions")]
     public float slashInteruptionTimer;
     public float slamTimer;
     public float slamStartTime;
+    public float slashTurnSpeed;
+
+    [Header("Dash")]
+    public float dashLength;
+    public float dashSpeed;
+    public float dashAccel;
+    public float dashTimer;
+    public Vector3 cachedDirection;
+    Vector3 targetDash;
+
+
 
 
     [Header("Shooting")]
@@ -68,8 +79,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public bool reloading;
     public bool canShoot;
     public bool triggerInUse;
-    public float aimFollowTime;
-    public float aimWalkSpeed;
+    public float LockOnFollowTime;
+    public float LockOnWalkSpeed;
     public bool lockedOn = false;
 
 
@@ -114,6 +125,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public GameObject bullet;
     public Vehicle wadeboat;
     public List<Collider> IgnoredColliders = new List<Collider>();
+    public AudioSource audio;
 
     public string stateString;
     public float timeScale;
@@ -134,6 +146,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         input = GetComponent<WadeInputs>();
         TransitionToState(CharacterState.Idle);
         wadeboat = GameObject.Find("wadeboat").GetComponent<Vehicle>();
+        audio = GetComponent<AudioSource>();
         //input = PlayerTarget.GetComponent<WadeInputs>();
         
     }
@@ -164,12 +177,23 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Walk:
                 {
+                    PlayerAnimator.SetBool("Walk", true);
                     break;
                 }
             case CharacterState.Jump:
                 {
                     PlayerAnimator.SetBool(currentJumpProfile.Animation, true);
                     Motor.ForceUnground();
+
+                    if (!lockedOn && fromState != CharacterState.Dash)
+                    {
+                        cachedDirection = Motor.CharacterForward;
+                    }
+                    else
+                    {
+                        cachedDirection = LocalMovement();
+                    }
+
 
                     planarMoveDirection = planarMoveDirection * currentJumpProfile.planarMultiplier;
 
@@ -200,18 +224,35 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     PlayerAnimator.SetBool("WallSlide", true);
                     wallInputTimer = wallTimerStart;
                     wallHitAngle = Vector3.Angle(Motor.CharacterForward, ledge.middleNorm);
-
                     break;
                 }
             case CharacterState.AirAction:
                 {
-                    slashInteruptionTimer = 0;
                     PlayerAnimator.SetBool(currentAirProfile.Animation, true);
+
+                    slashInteruptionTimer = 0;
+                    
+                    break;
+
+                }
+            case CharacterState.LockOn:
+                {
+                    PlayerAnimator.SetBool("LockOn", true);
                     break;
                 }
-            case CharacterState.Aim:
+            case CharacterState.Dash:
                 {
-                    PlayerAnimator.SetBool("Aim", true);
+                    if (lockedOn)
+                    {
+                        cachedDirection = LocalMovement();
+                    }
+                    else
+                    {
+                        cachedDirection = transform.forward;
+                    }
+
+                    moveSpeed += dashSpeed;
+                    PlayerAnimator.SetBool("Dash", true);
                     break;
                 }
 
@@ -233,6 +274,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Walk:
                 {
+                    PlayerAnimator.SetBool("Walk", false);
+
                     break;
                 }
             case CharacterState.Jump:
@@ -275,9 +318,17 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     PlayerAnimator.SetBool(currentAirProfile.Animation, false);
                     break;
                 }
-                case CharacterState.Aim:
+            case CharacterState.LockOn:
                 {
-                    PlayerAnimator.SetBool("Aim", false);
+                    PlayerAnimator.SetBool("LockOn", false);
+                    break;
+
+                }
+            case CharacterState.Dash:
+                {
+                    
+                    PlayerAnimator.SetBool("Dash", false);
+                    dashTimer = 0;
                     break;
                 }
 
@@ -314,6 +365,10 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         {
             case CharacterState.Idle:
                 {
+                    if (Input.GetButtonDown("B"))
+                    {
+                        TransitionToState(CharacterState.Dash);
+                    }
                     ShootControls();
 
                     if (canDrive)
@@ -325,9 +380,18 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         }
                     }
 
-                    if(Input.GetAxisRaw("LeftTrigger") != 0)
+                    if(Input.GetButtonDown("LeftBumper"))
                     {
-                        TransitionToState(CharacterState.Aim);
+                        if(lockedOn == true)
+                        {
+                            PlayerAnimator.SetBool("LockOn", false);
+                            lockedOn = false;
+                        }
+                        else
+                        {
+                            PlayerAnimator.SetBool("LockOn", true);
+                            lockedOn = true;
+                        }
                     }
                     
 
@@ -351,6 +415,10 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Walk:
                 {
+                    if (Input.GetButtonDown("B"))
+                    {
+                        TransitionToState(CharacterState.Dash);
+                    }
 
                     ShootControls();
 
@@ -363,9 +431,18 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         }
                     }
 
-                    if (Input.GetAxisRaw("LeftTrigger") > 0.1f)
+                    if (Input.GetButtonDown("LeftBumper"))
                     {
-                        TransitionToState(CharacterState.Aim);
+                        if (lockedOn == true)
+                        {
+                            PlayerAnimator.SetBool("LockOn", false);
+                            lockedOn = false;
+                        }
+                        else
+                        {
+                            PlayerAnimator.SetBool("LockOn", true);
+                            lockedOn = true;
+                        }
                     }
 
                     PlayerAnimator.SetFloat("Angle", blendAngle);
@@ -390,12 +467,21 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Jump:
                 {
-
-
-                    if (Input.GetButtonDown("Jump"))
+                    if (Input.GetButtonDown("LeftBumper"))
                     {
-                        currentJumpProfile = shotStandard;
-                        TransitionToState(CharacterState.Jump);
+                        if (lockedOn == true)
+                        {
+                            lockedOn = false;
+                        }
+                        else
+                        {
+                            lockedOn = true;
+                        }
+                    }
+
+                    if (Input.GetButtonDown("B"))
+                    {
+                        TransitionToState(CharacterState.Dash);
                     }
 
                     if (input.Current.SlashInput)
@@ -500,6 +586,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                                     shotTimer = 0;
                                     currentJumpProfile = sparkSlam;
                                     TransitionToState(CharacterState.Jump);
+                                    audio.Play();
                                     triggerInUse = true;
                                 }
                             }
@@ -513,6 +600,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                                 shotTimer = 0;
                                 currentJumpProfile = frontFlip;
                                 TransitionToState(CharacterState.Jump);
+                                audio.Play();
                                 triggerInUse = true;
                             }
                         }
@@ -536,21 +624,61 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     break;
 
                 }
-            case CharacterState.Aim:
+            case CharacterState.LockOn:
                 {
                     ShootControls();
 
+                    if (Input.GetButtonDown("B"))
+                    {
+                        cachedDirection = LocalMovement();
+                        TransitionToState(CharacterState.Dash);
+                    }
+
+                    if (Input.GetButtonDown("Jump"))
+                    {
+                        cachedDirection = LocalMovement();
+                        currentJumpProfile = jumpStandard;
+                        TransitionToState(CharacterState.Jump);
+                    }
+
                     if (!Motor.GroundingStatus.FoundAnyGround)
                     {
+                        cachedDirection = LocalMovement();
                         currentJumpProfile = groundFall;
                         TransitionToState(CharacterState.Jump);
                     }
 
-                    if (Input.GetAxisRaw("LeftTrigger") < 0.1f)
+                    if (Input.GetButtonDown("LeftBumper"))
                     {
                         TransitionToState(CharacterState.Idle);
                     }
 
+                    break;
+
+                }
+            case CharacterState.Dash:
+                {
+                    if(dashTimer > dashLength)
+                    {
+                        if (input.Current.SlashInput)
+                        {
+                            currentAirProfile = slashProfile;
+                            TransitionToState(CharacterState.AirAction);
+                        }
+                    }
+                    if(moveSpeed <= walkSpeed + 0.1)
+                    {
+                        if (Motor.GroundingStatus.FoundAnyGround)
+                        {
+                            TransitionToState(CharacterState.Idle);
+                        }
+                        else
+                        {
+                            currentJumpProfile = groundFall;
+                            TransitionToState(CharacterState.Jump);
+                        }
+                        
+                    }
                     break;
 
                 }
@@ -595,18 +723,34 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         {
             case CharacterState.Idle:
                 {
+                    if (lockedOn)
+                    {
+                        Vector3 lockOnRotation = (lockOnTarget.position - transform.position);
+                        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+                        lookRotation.x = 0;
+                        lookRotation.z = 0;
+                        currentRotation = Quaternion.Slerp(currentRotation, lookRotation, LockOnFollowTime * Time.deltaTime);
+                    }
                     //currentRotation = currentRotation;
                     break;
                 }
             case CharacterState.Walk:
                 {
-                    if (input.Current.MoveInput.magnitude > .1f)
+                    if (input.Current.MoveInput.magnitude > .1f && !lockedOn)
                     {
 
                         turnSpeed = Mathf.Lerp(turnSpeedSlow, turnSpeedFast, moveSpeed);
 
-                        Quaternion desiredAngle = Quaternion.LookRotation(LocalMovement()); ;
+                        Quaternion desiredAngle = Quaternion.LookRotation(LocalMovement());
                         currentRotation = Quaternion.Lerp(currentRotation, desiredAngle, turnSpeed * Time.deltaTime);
+                    }
+                    else
+                    {
+                        Vector3 lockOnRotation = (lockOnTarget.position - transform.position);
+                        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+                        lookRotation.x = 0;
+                        lookRotation.z = 0;
+                        currentRotation = Quaternion.Slerp(currentRotation, lookRotation, LockOnFollowTime * Time.deltaTime);
                     }
 
                     break;
@@ -617,10 +761,6 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     currentRotation = Quaternion.Euler(angles.x, Mathf.Abs(angles.y % 360), angles.z);
 
-                    break;
-                }
-            case CharacterState.Crouch:
-                {
                     break;
                 }
             case CharacterState.WallSlide:
@@ -635,21 +775,27 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     break;
 
                 }
-            case CharacterState.Aim:
+            case CharacterState.LockOn:
                 {
-                    if (lockedOn)
-                    {
-                        Vector3 lockOnRotation = (lockOnTarget.position - transform.position);
-                        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
-                        lookRotation.x = 0;
-                        lookRotation.z = 0;
-                        currentRotation = Quaternion.Slerp(currentRotation, lookRotation, aimFollowTime * Time.deltaTime);
-                    }
+                    
+                    Vector3 lockOnRotation = (lockOnTarget.position - transform.position);
+                    Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+                    lookRotation.x = 0;
+                    lookRotation.z = 0;
+                    currentRotation = Quaternion.Slerp(currentRotation, lookRotation, LockOnFollowTime * Time.deltaTime);
 
                     break;
 
                 }
-
+            case CharacterState.AirAction:
+                {
+                    if (lockedOn)
+                    {
+                        Quaternion desiredAngle = Quaternion.LookRotation(cachedDirection);
+                        currentRotation = Quaternion.Slerp(currentRotation, desiredAngle, slashTurnSpeed);
+                    }
+                    break;
+                }
         }
 
 
@@ -687,9 +833,17 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         TransitionToState(CharacterState.Idle);
                     }
 
-
                     moveSpeed = Mathf.Lerp(moveSpeed, correctedWalkSpeed, walkAccel * Time.deltaTime);
-                    currentVelocity = Vector3.Lerp(currentVelocity, transform.forward * LocalMovement().magnitude * moveSpeed, 10 * deltaTime);
+
+
+                    if (lockedOn)
+                    {
+                        currentVelocity = Vector3.Lerp(currentVelocity, LocalMovement() * moveSpeed, 10 * deltaTime);
+                    }
+                    else
+                    {
+                        currentVelocity = Vector3.Lerp(currentVelocity, transform.forward * LocalMovement().magnitude * moveSpeed, 10 * deltaTime);
+                    }                    
                     break;
                 }
             case CharacterState.Jump:
@@ -749,13 +903,12 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     verticalMoveSpeed += Gravity * Time.deltaTime;
 
 
-                    //currentVelocity += (transform.up * verticalMoveSpeed) - Vector3.Project(currentVelocity, transform.up);
                     if (ledge.middleHit)
                     {
                         moveSpeed = 0;
                     }
 
-                    currentVelocity = Motor.CharacterForward * moveSpeed + Motor.CharacterUp * verticalMoveSpeed + planarMoveDirection;
+                    currentVelocity = cachedDirection * moveSpeed + Motor.CharacterUp * verticalMoveSpeed + planarMoveDirection;
 
 
 
@@ -793,41 +946,44 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     float jumpAirSpeed;
                     float angle = Vector3.Angle(transform.forward, LocalMovement());
 
-
-                    if (input.Current.MoveInput != Vector3.zero)
+                if(currentAirProfile == slashProfile)
                     {
-                        if (Vector3.Angle(transform.forward, LocalMovement()) < 50 && moveSpeed > 4)
+                        if (input.Current.MoveInput != Vector3.zero)
                         {
-                            jumpAirSpeed = 0.5f;
-                            jumpAccel = currentJumpProfile.Acceleration;
+                            if (Vector3.Angle(transform.forward, LocalMovement()) < 50 && moveSpeed > 4)
+                            {
+                                jumpAirSpeed = 0.5f;
+                                jumpAccel = currentJumpProfile.Acceleration;
+                            }
+                            else
+                            {
+                                jumpAirSpeed = currentJumpProfile.AirSpeed;
+                                jumpAccel = currentJumpProfile.Acceleration;
+                            }
+                            planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * jumpAirSpeed, jumpAccel * Time.deltaTime);
                         }
                         else
                         {
-                            jumpAirSpeed = currentJumpProfile.AirSpeed;
-                            jumpAccel = currentJumpProfile.Acceleration;
+                            moveSpeed = Mathf.MoveTowards(moveSpeed, 0, linearDrag * deltaTime);
+                            planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, Vector3.zero, 10 * Time.deltaTime);
                         }
-                        planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * jumpAirSpeed, jumpAccel * Time.deltaTime);
+
+                        if (verticalMoveSpeed <= 0 && currentJumpProfile.Animation != "Fall")
+                        {
+                            Gravity = Mathf.Lerp(Gravity, maxGravity, gravitySwitchRate * Time.deltaTime);
+                        }
+
+                        verticalMoveSpeed += Gravity * Time.deltaTime;
+
+
+                        if (ledge.middleHit)
+                        {
+                            moveSpeed = 0;
+                        }
+
+                        currentVelocity = Motor.CharacterForward * moveSpeed + Motor.CharacterUp * verticalMoveSpeed + planarMoveDirection;
                     }
-                    else
-                    {
-                        moveSpeed = Mathf.MoveTowards(moveSpeed, 0, linearDrag * deltaTime);
-                        planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, Vector3.zero, 10 * Time.deltaTime);
-                    }
-
-                    if (verticalMoveSpeed <= 0 && currentJumpProfile.Animation != "Fall")
-                    {
-                        Gravity = Mathf.Lerp(Gravity, maxGravity, gravitySwitchRate * Time.deltaTime);
-                    }
-
-                    verticalMoveSpeed += Gravity * Time.deltaTime;
-
-
-                    if (ledge.middleHit)
-                    {
-                        moveSpeed = 0;
-                    }
-
-                    currentVelocity = Motor.CharacterForward * moveSpeed + Motor.CharacterUp * verticalMoveSpeed + planarMoveDirection;
+                    
                     break;
 
                 }
@@ -838,14 +994,27 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     break;
 
                 }
-            case CharacterState.Aim:
+            case CharacterState.LockOn:
                 {
 
                     moveSpeed = Mathf.Lerp(moveSpeed, correctedWalkSpeed, walkAccel * Time.deltaTime);
                     currentVelocity = Vector3.Lerp(currentVelocity, LocalMovement() * moveSpeed, 10 * deltaTime);
                     break;
                 }
+            case CharacterState.Dash:
+                {
+                    dashTimer += 1 * Time.deltaTime;
+                    if(dashTimer > dashLength)
+                    {
+                        moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, dashAccel * deltaTime);
+                    }
+
+                    
+                    currentVelocity = cachedDirection * moveSpeed;
+                    break;
+                }
         }
+
     }
 
 
