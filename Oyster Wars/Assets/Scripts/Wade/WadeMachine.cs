@@ -63,6 +63,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public float dashSpeed;
     public float dashAccel;
     public float dashTimer;
+    public Vector3 cachedTurnDirection;
     public Vector3 cachedDirection;
     Vector3 targetDash;
 
@@ -228,6 +229,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.AirAction:
                 {
+                    if (lockedOn)
+                    {
+                        if(LocalMovement().magnitude > .05f)
+                        {
+                            cachedTurnDirection = LocalMovement();
+                        }
+                    }
+                    
                     PlayerAnimator.SetBool(currentAirProfile.Animation, true);
 
                     slashInteruptionTimer = 0;
@@ -310,7 +319,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 {
                     slamTimer = 0;
                     slashInteruptionTimer = 0;
-                    if (toState == CharacterState.Idle)
+                    if (toState == CharacterState.Idle || toState == CharacterState.Walk)
                     {
                         verticalMoveSpeed = 0;
                     }
@@ -326,13 +335,10 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Dash:
                 {
-                    
                     PlayerAnimator.SetBool("Dash", false);
                     dashTimer = 0;
                     break;
                 }
-
-
         }
     }
 
@@ -350,7 +356,6 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         blendAngle = Vector3.Angle(transform.forward, LocalMovement()) * input.Current.MoveInput.x;
         angle = Vector3.Angle(transform.forward, LocalMovement());
         stateString = CurrentCharacterState.ToString();
-
 
         Time.timeScale = timeScale;
         PlayerAnimator.SetFloat("Speed", input.Current.MoveInput.magnitude);
@@ -684,8 +689,6 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
 
         }
-
-
     }
 
     /// <summary>
@@ -738,9 +741,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 {
                     if (input.Current.MoveInput.magnitude > .1f && !lockedOn)
                     {
-
                         turnSpeed = Mathf.Lerp(turnSpeedSlow, turnSpeedFast, moveSpeed);
-
                         Quaternion desiredAngle = Quaternion.LookRotation(LocalMovement());
                         currentRotation = Quaternion.Lerp(currentRotation, desiredAngle, turnSpeed * Time.deltaTime);
                     }
@@ -777,29 +778,26 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.LockOn:
                 {
-                    
                     Vector3 lockOnRotation = (lockOnTarget.position - transform.position);
                     Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
                     lookRotation.x = 0;
                     lookRotation.z = 0;
                     currentRotation = Quaternion.Slerp(currentRotation, lookRotation, LockOnFollowTime * Time.deltaTime);
-
                     break;
-
                 }
             case CharacterState.AirAction:
                 {
                     if (lockedOn)
                     {
-                        Quaternion desiredAngle = Quaternion.LookRotation(cachedDirection);
-                        currentRotation = Quaternion.Slerp(currentRotation, desiredAngle, slashTurnSpeed);
+                        if(LocalMovement().magnitude > 0.1f)
+                        {
+                            Quaternion desiredAngle = Quaternion.LookRotation(cachedTurnDirection);
+                            currentRotation = Quaternion.Slerp(currentRotation, desiredAngle, slashTurnSpeed);
+                        }
                     }
                     break;
                 }
         }
-
-
-
     }
 
     /// <summary>
@@ -850,7 +848,15 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 {
                     if (Motor.GroundingStatus.FoundAnyGround)
                     {
-                        TransitionToState(CharacterState.Idle);
+                        if (LocalMovement().magnitude > 0.02f)
+                        {
+                            TransitionToState(CharacterState.Walk);
+                        }
+                        else
+                        {
+                            TransitionToState(CharacterState.Idle);
+
+                        }
                     }
 
 
@@ -939,7 +945,15 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 {
                     if (Motor.GroundingStatus.FoundAnyGround)
                     {
-                        TransitionToState(CharacterState.Idle);
+                        if (LocalMovement().magnitude > 0.02f)
+                        {
+                            TransitionToState(CharacterState.Walk);
+                        }
+                        else
+                        {
+                            TransitionToState(CharacterState.Idle);
+
+                        }
                     }
 
                     float jumpAccel;
@@ -975,13 +989,12 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                         verticalMoveSpeed += Gravity * Time.deltaTime;
 
-
                         if (ledge.middleHit)
                         {
                             moveSpeed = 0;
                         }
 
-                        currentVelocity = Motor.CharacterForward * moveSpeed + Motor.CharacterUp * verticalMoveSpeed + planarMoveDirection;
+                        currentVelocity = cachedDirection * moveSpeed + Motor.CharacterUp * verticalMoveSpeed + planarMoveDirection;
                     }
                     
                     break;
