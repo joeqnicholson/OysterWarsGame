@@ -235,6 +235,10 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         {
                             cachedTurnDirection = LocalMovement();
                         }
+                        else
+                        {
+                            cachedTurnDirection = transform.forward;
+                        }
                     }
                     
                     PlayerAnimator.SetBool(currentAirProfile.Animation, true);
@@ -246,19 +250,21 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.LockOn:
                 {
-                    PlayerAnimator.SetBool("LockOn", true);
                     break;
                 }
             case CharacterState.Dash:
                 {
-                    if (lockedOn)
-                    {
-                        cachedDirection = LocalMovement();
-                    }
-                    else
-                    {
-                        cachedDirection = transform.forward;
-                    }
+                    //if (lockedOn)
+                    //{
+                    //    cachedDirection = LocalMovement();
+                    //}
+                    //else
+                    //{
+                    //    cachedDirection = transform.forward;
+                    //}
+
+                    cachedDirection = LocalMovement();
+
 
                     moveSpeed += dashSpeed;
                     PlayerAnimator.SetBool("Dash", true);
@@ -389,12 +395,12 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     {
                         if(lockedOn == true)
                         {
-                            PlayerAnimator.SetBool("LockOn", false);
+                            //PlayerAnimator.SetBool("LockOn", false);
                             lockedOn = false;
                         }
                         else
                         {
-                            PlayerAnimator.SetBool("LockOn", true);
+                            //PlayerAnimator.SetBool("LockOn", true);
                             lockedOn = true;
                         }
                     }
@@ -440,12 +446,12 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     {
                         if (lockedOn == true)
                         {
-                            PlayerAnimator.SetBool("LockOn", false);
+                            //PlayerAnimator.SetBool("LockOn", false);
                             lockedOn = false;
                         }
                         else
                         {
-                            PlayerAnimator.SetBool("LockOn", true);
+                            //PlayerAnimator.SetBool("LockOn", true);
                             lockedOn = true;
                         }
                     }
@@ -745,7 +751,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         Quaternion desiredAngle = Quaternion.LookRotation(LocalMovement());
                         currentRotation = Quaternion.Lerp(currentRotation, desiredAngle, turnSpeed * Time.deltaTime);
                     }
-                    else
+                    else if(lockedOn)
                     {
                         Vector3 lockOnRotation = (lockOnTarget.position - transform.position);
                         Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
