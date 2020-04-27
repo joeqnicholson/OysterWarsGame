@@ -36960,8 +36960,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1251695230}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -36.346, y: 10, z: 40.467}
-  m_LocalScale: {x: 1.77596, y: 1.77596, z: 1.77596}
+  m_LocalPosition: {x: -36.346, y: 7.61, z: 40.467}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 5006512736116642092}
   m_Father: {fileID: 0}
@@ -39141,6 +39141,16 @@ PrefabInstance:
       propertyPath: aimMovement
       value: 1.2
       objectReference: {fileID: 0}
+    - target: {fileID: 9218908515576717408, guid: 5143d53dd63742944a0f3bd714ab6743,
+        type: 3}
+      propertyPath: Distance
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 9218908515576717408, guid: 5143d53dd63742944a0f3bd714ab6743,
+        type: 3}
+      propertyPath: ObstructionCheckRadius
+      value: 0.7
+      objectReference: {fileID: 0}
     - target: {fileID: 9218908515576717411, guid: 5143d53dd63742944a0f3bd714ab6743,
         type: 3}
       propertyPath: m_Name
@@ -39418,7 +39428,7 @@ AudioSource:
   Priority: 128
   DopplerLevel: 1
   MinDistance: 1
-  MaxDistance: 500
+  MaxDistance: 10.861059
   Pan2D: 0
   rolloffMode: 0
   BypassEffects: 0
@@ -39538,7 +39548,7 @@ PrefabInstance:
     - target: {fileID: 2591396256047404628, guid: 06d62536105eb424cb59d249a72f2345,
         type: 3}
       propertyPath: clipSize
-      value: 5
+      value: 237
       objectReference: {fileID: 0}
     - target: {fileID: 2591396256047404628, guid: 06d62536105eb424cb59d249a72f2345,
         type: 3}
@@ -39613,12 +39623,12 @@ PrefabInstance:
     - target: {fileID: 2591396256047404628, guid: 06d62536105eb424cb59d249a72f2345,
         type: 3}
       propertyPath: dashSpeed
-      value: 35
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 2591396256047404628, guid: 06d62536105eb424cb59d249a72f2345,
         type: 3}
       propertyPath: dashAccel
-      value: 20
+      value: 29
       objectReference: {fileID: 0}
     - target: {fileID: 2591396256047404628, guid: 06d62536105eb424cb59d249a72f2345,
         type: 3}
@@ -39718,7 +39728,22 @@ PrefabInstance:
     - target: {fileID: 2591396256047404639, guid: 06d62536105eb424cb59d249a72f2345,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4361872797750828860, guid: 06d62536105eb424cb59d249a72f2345,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4361872797750828860, guid: 06d62536105eb424cb59d249a72f2345,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4361872797750828860, guid: 06d62536105eb424cb59d249a72f2345,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 7923959797514915750, guid: 06d62536105eb424cb59d249a72f2345,
         type: 3}

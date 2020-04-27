@@ -261,7 +261,7 @@ public partial class WadeMachine : MonoBehaviour
         }
         else
         {
-            if (stateString == "AirAction")
+            if (stateString != "AirAction")
             {
                 Transform cubeTarget;
                 cubeTarget = camera.GetComponent<WadeCamera>().lockOnInstance.transform;
