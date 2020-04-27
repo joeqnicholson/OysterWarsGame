@@ -84,6 +84,11 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public float LockOnWalkSpeed;
     public bool lockedOn = false;
 
+    [Header("Grenades")]
+    public float throwForce;
+    public float throwForceUp;
+    public float throwForceDown;
+    
 
     [Header("WallSlide")]
     public float wallSlideSpeed;
@@ -125,6 +130,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public Transform camFollow;
     public GameObject bullet;
     public Vehicle wadeboat;
+    public GameObject grenade;
     public List<Collider> IgnoredColliders = new List<Collider>();
     public AudioSource audio;
 
@@ -382,6 +388,16 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     }
                     ShootControls();
 
+                    if (Input.GetButtonDown("RightBumper"))
+                    {
+                        GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
+                        Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
+                        CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
+                        IgnoredColliders.Add(grenadeCollider);
+                        tempGrenadeRB.AddForce(transform.forward * throwForce, ForceMode.Impulse);
+                        tempGrenadeRB.AddForce(Vector3.up * throwForceUp, ForceMode.Impulse);
+                    }
+
                     if (canDrive)
                     {
                         if (Input.GetButtonDown("Action"))
@@ -426,6 +442,16 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Walk:
                 {
+                    if (Input.GetButtonDown("RightBumper"))
+                    {
+                        GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
+                        Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
+                        CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
+                        IgnoredColliders.Add(grenadeCollider);
+                        tempGrenadeRB.AddForce(transform.forward * throwForce, ForceMode.Impulse);
+                        tempGrenadeRB.AddForce(Vector3.up * throwForceUp, ForceMode.Impulse);
+                    }
+
                     if (Input.GetButtonDown("B"))
                     {
                         TransitionToState(CharacterState.Dash);
@@ -478,6 +504,15 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Jump:
                 {
+
+                    if (Input.GetButtonDown("RightBumper"))
+                    {
+                        GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
+                        CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
+                        IgnoredColliders.Add(grenadeCollider);
+                        Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
+                        tempGrenadeRB.AddForce(Vector3.down * throwForceDown, ForceMode.Impulse);
+                    }
                     if (Input.GetButtonDown("LeftBumper"))
                     {
                         if (lockedOn == true)
@@ -669,7 +704,16 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case CharacterState.Dash:
                 {
-                    if(dashTimer > dashLength)
+                    if (Input.GetButtonDown("RightBumper"))
+                    {
+                        GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
+                        CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
+                        IgnoredColliders.Add(grenadeCollider);
+                        Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
+                        tempGrenadeRB.AddForce(Vector3.down * throwForceDown, ForceMode.Impulse);
+                    }
+
+                    if (dashTimer > dashLength)
                     {
                         if (input.Current.SlashInput)
                         {
