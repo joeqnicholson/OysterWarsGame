@@ -6,7 +6,7 @@ using System;
 
 public enum ScarecrowState
 {
-    Idle, Charge
+    Idle, Charge, Fall
 }
 
 public class Scarecrow : Enemy, ICharacterController
@@ -16,19 +16,28 @@ public class Scarecrow : Enemy, ICharacterController
     public float scareCrowChargeSpeed;
     public float startChargingDistance;
     public float maxTurnDistance;
-    public float ChargeTimer;
+    public float stateTimer;
     public float ChargeLength;
-
+    public float dropTimer;
+    public float dropFrequency;
+    public bool hasDropped;
+    public float Gravity;
+    public float verticalMoveSpeed;
+    public float idleWaitTime;
+    public float endChargeTime;
 
     public KinematicCharacterMotor Motor;
     public ScarecrowState CurrentScarecrowState { get; private set; }
     public Transform wade;
+    public GameObject grenade;
     private void Start()
     {
         Motor.CharacterController = this;
         turnSpeed = scareCrowTurnSpeed;
         TransitionToState(ScarecrowState.Idle);
         wade = GameObject.Find("Wade").transform;
+        health = startHealth;
+
     }
 
 
@@ -47,13 +56,19 @@ public class Scarecrow : Enemy, ICharacterController
         {
             case ScarecrowState.Idle:
                 {
-
+                    stateTimer = 0;
                     break;
                 }
             case ScarecrowState.Charge:
                 {
-                    ChargeTimer = 0;
+                    hasDropped = false;
+                    stateTimer = 0;
 
+                    break;
+                }
+            case ScarecrowState.Fall:
+                {
+                    stateTimer = 0;
                     break;
                 }
         }
@@ -63,33 +78,87 @@ public class Scarecrow : Enemy, ICharacterController
     {
         switch (state)
         {
-
+            case ScarecrowState.Fall:
+                {
+                    verticalMoveSpeed = 0;
+                    break;
+                }
         }
     }
 
     public void Update()
     {
+
+
+        DoHealth();
+        
+
         switch (CurrentScarecrowState)
         {
             case ScarecrowState.Idle:
                 {
+                    stateTimer += Time.deltaTime;
+                    dropTimer += Time.deltaTime;
 
-                    if (Vector3.Distance(transform.position, wade.position) < startChargingDistance)
+                    Vector3 lockOnRotation = (wade.position - transform.position);
+                    Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+                    lookRotation.x = 0;
+                    lookRotation.z = 0;
+
+
+
+                    if (dropTimer > dropFrequency / 1.6f)
                     {
-                        TransitionToState(ScarecrowState.Charge);
+                        GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, lookRotation) as GameObject;
+                        CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
+                        Grenade grenadeSc = tempGrenade.GetComponent<Grenade>();
+                        grenadeSc.IgnoreCollisions(GetComponent<Collider>());
+                        grenadeSc.enemyGrenade = true;
+                        IgnoredColliders.Add(grenadeCollider);
+                        Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
+                        tempGrenadeRB.AddForce(tempGrenade.transform.forward * 20, ForceMode.Impulse);
+                        dropTimer = 0;
                     }
+
+                    if (stateTimer > idleWaitTime)
+                    {
+                            TransitionToState(ScarecrowState.Charge);
+                    }
+                    
 
                     break;
                 }
             case ScarecrowState.Charge:
                 {
-                    ChargeTimer += Time.deltaTime;
+                    stateTimer += Time.deltaTime;
+                    dropTimer += Time.deltaTime;
 
-                    if(ChargeTimer > ChargeLength)
+                    if(stateTimer > ChargeLength)
                     {
                         TransitionToState(ScarecrowState.Idle);
                     }
 
+                    if (dropTimer > dropFrequency && Vector3.Distance(transform.position, wade.position) < startChargingDistance - 8)
+                    {
+                        GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
+                        CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
+                        Grenade grenadeSc = tempGrenade.GetComponent<Grenade>();
+                        grenadeSc.IgnoreCollisions(GetComponent<Collider>());
+                        grenadeSc.enemyGrenade = true;
+                        IgnoredColliders.Add(grenadeCollider);
+                        Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
+                        tempGrenadeRB.AddForce(Vector3.up * throwForceDown, ForceMode.Impulse);
+                        dropTimer = 0;
+                    }
+
+                    break;
+                }
+            case ScarecrowState.Fall:
+                {
+                    if (Motor.GroundingStatus.FoundAnyGround)
+                    {
+                        TransitionToState(ScarecrowState.Idle);
+                    }
                     break;
                 }
         }
@@ -108,7 +177,7 @@ public class Scarecrow : Enemy, ICharacterController
                         Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
                         lookRotation.x = 0;
                         lookRotation.z = 0;
-                        currentRotation = Quaternion.Slerp(currentRotation, lookRotation, turnSpeed * Time.deltaTime);
+                        currentRotation = Quaternion.Slerp(currentRotation, lookRotation, turnSpeed * 2 * Time.deltaTime);
                     }
 
                     break;
@@ -116,14 +185,12 @@ public class Scarecrow : Enemy, ICharacterController
             case ScarecrowState.Charge:
                 {
 
-                    
-
                     Vector3 lockOnRotation = (wade.position - transform.position);
                     Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
                     lookRotation.x = 0;
                     lookRotation.z = 0;
 
-                    if (Vector3.Distance(transform.position, wade.position) < startChargingDistance)
+                    if (Vector3.Distance(transform.position, wade.position) < startChargingDistance + 5)
                     {
                         currentRotation = Quaternion.Slerp(currentRotation, lookRotation, turnSpeed / 10 * Time.deltaTime);
                     }
@@ -131,6 +198,7 @@ public class Scarecrow : Enemy, ICharacterController
                     {
                         currentRotation = Quaternion.Slerp(currentRotation, lookRotation, turnSpeed / 3 * Time.deltaTime);
                     }
+
                     
 
                     break;
@@ -150,8 +218,8 @@ public class Scarecrow : Enemy, ICharacterController
                 }
              case ScarecrowState.Charge:
                 {
-                    
-                    if (Vector3.Distance(transform.position, wade.position) < startChargingDistance)
+
+                    if (stateTimer < endChargeTime)
                     {
                         scareCrowMoveSpeed = Mathf.Lerp(scareCrowMoveSpeed, scareCrowChargeSpeed, 12 * Time.deltaTime);
                         
@@ -161,8 +229,20 @@ public class Scarecrow : Enemy, ICharacterController
                         scareCrowMoveSpeed = Mathf.Lerp(scareCrowMoveSpeed, scareCrowChargeSpeed / 5, 12 * Time.deltaTime);
                     }
 
+                    if (!Motor.GroundingStatus.FoundAnyGround)
+                    {
+                        TransitionToState(ScarecrowState.Fall);
+                    }
+
                     currentVelocity = Motor.CharacterForward * scareCrowMoveSpeed;
 
+                    break;
+                }
+            case ScarecrowState.Fall:
+                {
+                    verticalMoveSpeed -= Gravity;
+
+                    currentVelocity = Motor.CharacterForward * scareCrowMoveSpeed + Vector3.up * verticalMoveSpeed;
                     break;
                 }
         }
@@ -189,15 +269,15 @@ public class Scarecrow : Enemy, ICharacterController
 
     public bool IsColliderValidForCollisions(Collider coll)
     {
-        //if (IgnoredColliders.Count == 0)
-        //{
-        //    return true;
-        //}
+        if (IgnoredColliders.Count == 0)
+        {
+            return true;
+        }
 
-        //if (IgnoredColliders.Contains(coll))
-        //{
-        //    return false;
-        //}
+        if (IgnoredColliders.Contains(coll))
+        {
+            return false;
+        }
 
         return true;
     }
@@ -226,4 +306,12 @@ public class Scarecrow : Enemy, ICharacterController
     {
     }
 
+
+    public void DoHealth()
+    {
+        Vector3 lockOnRotation = (wade.position - healthCanvas.transform.position);
+        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+        healthCanvas.transform.rotation = Quaternion.Slerp(healthCanvas.transform.rotation, lookRotation, turnSpeed * 2 * Time.deltaTime);
+        healthBar.fillAmount = (health / startHealth);
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using KinematicCharacterController;
 using System;
 
@@ -15,14 +16,13 @@ public enum WadeState
 public partial class WadeMachine : MonoBehaviour, ICharacterController
 {
 
-
-
     [Header("Active Wade Stats")]
     public float moveSpeed;
     public Vector3 wadeVelocity;
     public float verticalMoveSpeed;
     public bool canDrive;
-
+    public float health = 100;
+    public float startHealth = 100;
 
 
     [Header("Walking")]
@@ -71,8 +71,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
 
     [Header("Shooting")]
-    public int bullets;
-    public int clipSize;
+    public float bullets;
+    public float clipSize;
     public float boltActionTime;
     public float shotTimer;
     public float reloadSpeed;
@@ -101,20 +101,15 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     [Header("CamStats")]
     public GameObject camera;
     public Transform cam;
-    public Vector3 camF;
-    public Vector3 camR;
-    public Vector3 intent;
+    Vector3 camF;
+    Vector3 camR;
+    Vector3 intent;
     public float followRate = 5f;
     public float verticalMovementMax = 5f;
     public float angle;
+    
 
-
-
-    float num = 1;
-
-    public float linearDrag = 5;
-
-    public float blendAngle;
+    float blendAngle;
 
     public WadeState CurrentWadeState { get; private set; }
 
@@ -133,6 +128,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public GameObject grenade;
     public List<Collider> IgnoredColliders = new List<Collider>();
     public AudioSource audio;
+    public Image healthBar;
+    public Image ammoBar;
 
     public string stateString;
     public float timeScale;
@@ -143,6 +140,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
     private void Start()
     {
+        health = startHealth;
+        bullets = clipSize;
         canShoot = true;
         bullets = clipSize;
         Gravity = Mathf.Clamp(Gravity, -80, 0);
@@ -271,7 +270,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     cachedDirection = LocalMovement();
 
-
+                    bullets -= 1;
                     moveSpeed += dashSpeed;
                     PlayerAnimator.SetBool("Dash", true);
                     break;
@@ -365,6 +364,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
     public void Update()
     {
+        DoUI();
         blendAngle = Vector3.Angle(transform.forward, LocalMovement()) * input.Current.MoveInput.x;
         angle = Vector3.Angle(transform.forward, LocalMovement());
         stateString = CurrentWadeState.ToString();
@@ -384,7 +384,11 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 {
                     if (Input.GetButtonDown("B"))
                     {
-                        TransitionToState(WadeState.Dash);
+                        if (canShoot)
+                        {
+                            TransitionToState(WadeState.Dash);
+                        }
+                        
                     }
                     ShootControls();
 
@@ -454,7 +458,10 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if (Input.GetButtonDown("B"))
                     {
-                        TransitionToState(WadeState.Dash);
+                        if (canShoot)
+                        {
+                            TransitionToState(WadeState.Dash);
+                        }
                     }
 
                     ShootControls();
@@ -528,7 +535,10 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if (Input.GetButtonDown("B"))
                     {
-                        TransitionToState(WadeState.Dash);
+                        if (canShoot)
+                        {
+                            TransitionToState(WadeState.Dash);
+                        }
                     }
 
                     if (input.Current.SlashInput)
@@ -941,14 +951,6 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         }
                         planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, LocalMovement() * jumpAirSpeed, jumpAccel * Time.deltaTime);
                     }
-                    else
-                    {
-
-                        moveSpeed = Mathf.Lerp(moveSpeed, 1, linearDrag * Time.deltaTime);
-
-                    }
-
-
 
                     if (verticalMoveSpeed <= gravSwitchStart && currentJumpProfile.Animation != "Fall")
                     {
@@ -1027,7 +1029,6 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         }
                         else
                         {
-                            moveSpeed = Mathf.MoveTowards(moveSpeed, 0, linearDrag * deltaTime);
                             planarMoveDirection = Vector3.MoveTowards(planarMoveDirection, Vector3.zero, 10 * Time.deltaTime);
                         }
 

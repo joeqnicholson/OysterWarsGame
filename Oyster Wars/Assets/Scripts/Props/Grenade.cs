@@ -5,7 +5,10 @@ using UnityEngine;
 public class Grenade : MonoBehaviour
 {
     public float delay = 3f;
+    public float blastRadius;
+    public int damage = 30;
     float countdown = 0;
+    public bool enemyGrenade;
 
     public GameObject wade;
     public GameObject explosionEffect;
@@ -30,8 +33,30 @@ public class Grenade : MonoBehaviour
     void Explode()
     {
         Instantiate(explosionEffect, transform.position, transform.rotation);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, blastRadius);
 
+        foreach (Collider nearbyObject in colliders)
+        {
+            Enemy enemy = nearbyObject.GetComponent<Enemy>();
+            WadeMachine wade = nearbyObject.GetComponent<WadeMachine>();
+            if(enemy != null)
+            {
+                if (!enemyGrenade)
+                {
+                    enemy.health -= damage;
+                }
+                
+            }
 
+            if(wade != null)
+            {
+                wade.health -= damage;
+            }
+        }
         Destroy(gameObject);
+    }
+    public void IgnoreCollisions(Collider collider)
+    {
+        Physics.IgnoreCollision(GetComponent<Collider>(), collider);
     }
 }
