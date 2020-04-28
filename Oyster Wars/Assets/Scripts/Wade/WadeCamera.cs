@@ -82,7 +82,7 @@ public class WadeCamera : MonoBehaviour
     private void Update()
     {
         LockOnControls();
-        HandleCollision();
+        //HandleCollision();
 
 
         heading = heading % 360;

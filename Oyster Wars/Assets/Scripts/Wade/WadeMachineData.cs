@@ -97,6 +97,11 @@ public partial class WadeMachine : MonoBehaviour
         Animation = "AirSlash"
     };
 
+    public void DoUI()
+    {
+        healthBar.fillAmount = (health / startHealth);
+        ammoBar.fillAmount = (bullets / clipSize);
+    }
 
     private void FollowBlock()
     {
