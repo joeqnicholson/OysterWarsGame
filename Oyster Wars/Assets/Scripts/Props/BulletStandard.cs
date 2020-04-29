@@ -25,11 +25,12 @@ public class BulletStandard : MonoBehaviour
             Enemy enemy = hit.collider.gameObject.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.health -= damage;
+                enemy.DoTakeDamage(damage);
             }
             Instantiate(explosionEffect, transform.position, transform.rotation);
             Destroy(gameObject);
         }
+
 
 
         rb.velocity = transform.forward * speed;
@@ -42,7 +43,19 @@ public class BulletStandard : MonoBehaviour
         {
             enemy.health -= damage;
         }
-        Instantiate(explosionEffect, transform.position, transform.rotation);
-        Destroy(gameObject);
+
+
+        BulletStandard bullet = other.GetComponent<BulletStandard>();
+        if(bullet != null)
+        {
+
+        }
+        else
+        {
+            Instantiate(explosionEffect, transform.position, transform.rotation);
+            Destroy(gameObject);
+        }
+
+        
     }
 }

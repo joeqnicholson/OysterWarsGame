@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Random = UnityEngine.Random;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using KinematicCharacterController;
@@ -32,12 +33,13 @@ public class Scarecrow : Enemy, ICharacterController
     public GameObject grenade;
     private void Start()
     {
+        cam = GameObject.Find("Camera").GetComponent<Camera>();
+        wadeCamera = GameObject.Find("Camera").GetComponent<WadeCamera>();
         Motor.CharacterController = this;
         turnSpeed = scareCrowTurnSpeed;
         TransitionToState(ScarecrowState.Idle);
         wade = GameObject.Find("Wade").transform;
         health = startHealth;
-
     }
 
 
@@ -89,7 +91,7 @@ public class Scarecrow : Enemy, ICharacterController
     public void Update()
     {
 
-
+        DoTargeting();
         DoHealth();
         
 
@@ -116,7 +118,7 @@ public class Scarecrow : Enemy, ICharacterController
                         grenadeSc.enemyGrenade = true;
                         IgnoredColliders.Add(grenadeCollider);
                         Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
-                        tempGrenadeRB.AddForce(tempGrenade.transform.forward * 20, ForceMode.Impulse);
+                        tempGrenadeRB.AddForce(tempGrenade.transform.forward * 30, ForceMode.Impulse);
                         dropTimer = 0;
                     }
 
@@ -140,6 +142,8 @@ public class Scarecrow : Enemy, ICharacterController
 
                     if (dropTimer > dropFrequency && Vector3.Distance(transform.position, wade.position) < startChargingDistance - 8)
                     {
+                        
+                        
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
                         Grenade grenadeSc = tempGrenade.GetComponent<Grenade>();
@@ -147,7 +151,7 @@ public class Scarecrow : Enemy, ICharacterController
                         grenadeSc.enemyGrenade = true;
                         IgnoredColliders.Add(grenadeCollider);
                         Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
-                        tempGrenadeRB.AddForce(Vector3.up * throwForceDown, ForceMode.Impulse);
+                        tempGrenadeRB.AddForce(new Vector3(Random.Range(-12f,12f),0, Random.Range(-12f, 12f)) * throwForceDown, ForceMode.Impulse);
                         dropTimer = 0;
                     }
 
@@ -314,4 +318,6 @@ public class Scarecrow : Enemy, ICharacterController
         healthCanvas.transform.rotation = Quaternion.Slerp(healthCanvas.transform.rotation, lookRotation, turnSpeed * 2 * Time.deltaTime);
         healthBar.fillAmount = (health / startHealth);
     }
+
+    
 }

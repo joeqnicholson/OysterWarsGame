@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 2591396256047404633}
   - component: {fileID: 2591396256047404634}
   - component: {fileID: 2591396256047404635}
+  - component: {fileID: 3007115711672866785}
   - component: {fileID: 2591396256047404628}
   - component: {fileID: 2591396256047404632}
   - component: {fileID: 2591396256047404639}
@@ -173,6 +174,21 @@ MonoBehaviour:
   PreserveAttachedRigidbodyMomentum: 1
   HasPlanarConstraint: 0
   PlanarConstraintAxis: {x: 0, y: 0, z: 1}
+--- !u!114 &3007115711672866785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2591396256047404629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de672b447a2eb294cb65aa2a07ac0bef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SoundSource: {fileID: 0}
+  pearlPickup: {fileID: 0}
+  rifleShot: {fileID: 0}
 --- !u!114 &2591396256047404628
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -188,6 +204,10 @@ MonoBehaviour:
   moveSpeed: 0
   wadeVelocity: {x: 0, y: 0, z: 0}
   verticalMoveSpeed: 0
+  canDrive: 0
+  health: 100
+  startHealth: 100
+  pearls: 0
   correctedWalkSpeed: 0
   walkSpeed: 0
   walkAccel: 56
@@ -195,6 +215,7 @@ MonoBehaviour:
   turnSpeedFast: 15
   turnSpeedSlow: 15
   turnSpeed: 0
+  walkSpeedsTransitionTime: 0
   planarMoveDirection: {x: 0, y: 0, z: 0}
   fallGravity: 40
   gravitySwitchRate: 8
@@ -204,11 +225,17 @@ MonoBehaviour:
   lockOnAngle: 0
   minJumpHeight: 1
   maxVM: 30
-  smaxVM: 15
   minVM: -30
   slashInteruptionTimer: 0
   slamTimer: 0
   slamStartTime: 0
+  slashTurnSpeed: 0
+  dashLength: 0
+  dashSpeed: 0
+  dashAccel: 0
+  dashTimer: 0
+  cachedTurnDirection: {x: 0, y: 0, z: 0}
+  cachedDirection: {x: 0, y: 0, z: 0}
   bullets: 0
   clipSize: 0
   boltActionTime: 0
@@ -217,30 +244,41 @@ MonoBehaviour:
   reloadWalkSpeed: 0
   reloading: 0
   canShoot: 0
+  triggerInUse: 0
+  LockOnFollowTime: 0
+  LockOnWalkSpeed: 0
+  lockedOn: 0
+  throwForce: 0
+  throwForceUp: 0
+  throwForceDown: 0
   wallSlideSpeed: 1
   wallHitAngle: 0
   wallHitInputAngle: 0
   wallTimerStart: 1
   wallInputTimer: 0
   comingFromWallSlide: 0
+  camera: {fileID: 0}
   cam: {fileID: 0}
-  camF: {x: 0, y: 0, z: 0}
-  camR: {x: 0, y: 0, z: 0}
-  intent: {x: 0, y: 0, z: 0}
   followRate: 5
   verticalMovementMax: 5
   angle: 0
-  linearDrag: 5
-  blendAngle: 0
   input: {fileID: 0}
   Motor: {fileID: 2591396256047404635}
   PlayerAnimator: {fileID: 0}
   PlayerMesh: {fileID: 780008855587679535}
   lockOnTarget: {fileID: 0}
   gun: {fileID: 2591396255712683992}
+  gunParentBone: {fileID: 0}
   ledge: {fileID: 0}
   camFollow: {fileID: 0}
   bullet: {fileID: 5216576217883653464, guid: b342e3cb41d3b7a469e97633a7c37bb0, type: 3}
+  wadeboat: {fileID: 0}
+  grenade: {fileID: 0}
+  IgnoredColliders: []
+  audio: {fileID: 0}
+  wadeSound: {fileID: 0}
+  healthBar: {fileID: 0}
+  ammoBar: {fileID: 0}
   stateString: 
   timeScale: 1
 --- !u!114 &2591396256047404632

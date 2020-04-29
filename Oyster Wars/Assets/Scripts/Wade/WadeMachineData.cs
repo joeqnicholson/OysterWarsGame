@@ -166,6 +166,25 @@ public partial class WadeMachine : MonoBehaviour
         return Vector3.SignedAngle(gun.forward, Motor.CharacterForward, camF);
 
     }
+
+    public void DoTakeDamage(float damage)
+    {
+        if (!isHit)
+        {
+            health -= damage;
+        }
+
+        if(health > 0)
+        {
+            TransitionToState(WadeState.Hit);
+        }
+        else
+        {
+            TransitionToState(WadeState.Death);
+        }
+        
+    }
+
     void ShootControls()
     {
         if (Input.GetAxisRaw("RightTrigger") != 0)
@@ -178,7 +197,7 @@ public partial class WadeMachine : MonoBehaviour
                     bullets -= 1;
                     shotTimer = 0;
                     triggerInUse = true;
-                    audio.Play();
+                    wadeSound.PlayRifleShot();
                 }
             }
         }
@@ -249,6 +268,15 @@ public partial class WadeMachine : MonoBehaviour
             correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, walkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
         }
 
+        if(camObject.GetComponent<WadeCamera>().enemiesOnScreen.Count == 0)
+        {
+            canLockOn = false;
+            lockedOn = false;
+        }
+        else
+        {
+            canLockOn = true;
+        }
 
 
 
@@ -268,9 +296,6 @@ public partial class WadeMachine : MonoBehaviour
         {
             if (stateString != "AirAction")
             {
-                Transform cubeTarget;
-                cubeTarget = camera.GetComponent<WadeCamera>().lockOnInstance.transform;
-
                 Vector3 lockOnRotation = (cubeTarget.position - gun.position);
                 Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
                 Debug.DrawLine(gun.position, cubeTarget.position, Color.red);

@@ -43,14 +43,14 @@ public class Grenade : MonoBehaviour
             {
                 if (!enemyGrenade)
                 {
-                    enemy.health -= damage;
+                    enemy.DoTakeDamage(damage);
                 }
                 
             }
 
             if(wade != null)
             {
-                wade.health -= damage;
+                wade.DoTakeDamage(damage);
             }
         }
         Destroy(gameObject);
