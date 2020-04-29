@@ -2,17 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WadeSound : MonoBehaviour
+public partial class WadeSound : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+
+    public AudioSource SoundSource;
+    public AudioClip pearlPickup;
+    public AudioClip rifleShot;
+    public AudioClip footStep;
+
+    private void Start()
     {
-        
+
     }
 
-    // Update is called once per frame
-    void Update()
+    public void PlayPearlPickup()
     {
-        
+        SoundSource.PlayOneShot(pearlPickup, 0.5f);
+    }
+
+    public void PlayRifleShot()
+    {
+        SoundSource.PlayOneShot(rifleShot, 0.5f);
+    }
+
+    public void PlayFootSteps()
+    {
+        SoundSource.PlayOneShot(footStep);
     }
 }

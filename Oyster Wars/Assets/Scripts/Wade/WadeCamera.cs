@@ -8,6 +8,7 @@ public class WadeCamera : MonoBehaviour
     public float Distance = 50.0f;
     public float Height = 4.0f;
     public float maxDistance;
+    public float maxRegDistance;
     public float minDistance;
 
     private bool _distanceIsObstructed;
@@ -55,6 +56,9 @@ public class WadeCamera : MonoBehaviour
     public float offsetY;
     public float aimMovement;
     public Vector3 aimMovementDifference;
+    public List<Transform> enemiesOnScreen = new List<Transform>();
+    public int enemyIndex = 0;
+    bool hasHitCurrent;
 
     public bool cube = true;
     int num = 1;
@@ -81,8 +85,9 @@ public class WadeCamera : MonoBehaviour
     }
     private void Update()
     {
+        TargetingList();
         LockOnControls();
-        //HandleCollision();
+        HandleCollision();
 
 
         heading = heading % 360;
@@ -135,17 +140,11 @@ public class WadeCamera : MonoBehaviour
                     boatOrbit = 0;
 
                 }
-                Distance = Mathf.Lerp(Distance, boatDistance, 6 * Time.deltaTime);
-            }
-            else if (machine.stateString == "Aim")
-            {
-                //heading = mathf.lerpangle(heading, playertarget.transform.localrotation.eulerangles.y, 9 * time.deltatime);
-                //tilt = mathf.lerp(tilt, aimtilt, 9 * time.deltatime);
-                //distance = mathf.lerp(distance, aimdistance, 6 * time.deltatime);
+                maxDistance = Mathf.Lerp(maxDistance, boatDistance, 6 * Time.deltaTime);
             }
             else
             {
-                Distance = Mathf.Lerp(Distance, maxDistance, 6 * Time.deltaTime);
+                maxDistance = Mathf.Lerp(maxDistance, maxRegDistance, 6 * Time.deltaTime);
             }
 
             Quaternion desiredRot = Quaternion.Euler(tilt, heading, 0);
@@ -206,38 +205,82 @@ public class WadeCamera : MonoBehaviour
 
     }
 
+    void TargetingList()
+    {
+        int i = 0;
+        foreach (Transform enemy in enemiesOnScreen)
+        {
+            Vector3 enemyPosition = GetComponent<Camera>().WorldToViewportPoint(enemy.position);
+            bool onScreen = enemyPosition.z > 0 && enemyPosition.x > 0 && enemyPosition.x < 1 && enemyPosition.y > 0 && enemyPosition.y < 1;
+
+            if (i < enemyIndex && !onScreen)
+            {
+                enemyIndex -= 1;
+                enemiesOnScreen.Remove(enemy);
+                break;
+            }
+            else if(i >= enemyIndex && !onScreen)
+            {
+                enemiesOnScreen.Remove(enemy);
+                break;
+            }
+
+            i += 1;
+        }
+    }
+
     void LockOnControls()
     {
+        
+
+        
 
 
-        if (Input.GetButtonDown("LeftBumper"))
+        //First Create A Vector3 With Dimensions Based On The Camera's Viewport
+
+
+
+        //If The X And Y Values Are Between 0 And 1, The Enemy Is On Screen
+
+
+        if(enemyIndex > enemiesOnScreen.Count - 1)
         {
-            num++;
-        }
-
-        if (Input.GetAxisRaw("LeftTrigger") != 0)
-        {
-            if(triggerInUse == false)
+            if(enemyIndex != 0)
             {
-                triggerInUse = true;
-            }
-            
-            
-        }
-        if (Input.GetAxisRaw("LeftTrigger") == 0)
-        {
-            if(triggerInUse == true)
-            {
-                triggerInUse = false;
+                enemyIndex -= 1;
             }
             
         }
 
-        if (machine.lockedOn)
+
+        if (machine.lockedOn && enemiesOnScreen.Count > 0)
+        {
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                if(enemyIndex == enemiesOnScreen.Count - 1)
+                {
+                    enemyIndex = 0;
+                }
+                else
+                {
+                    enemyIndex += 1;
+                }
+                
+            }
+        }
+
+
+        if (input.Current.MouseInput.magnitude == 0)
+        {
+            triggerInUse = false;
+        }
+
+
+        if (machine.lockedOn && enemiesOnScreen.Count > 0)
         {
             lockedOn = true;
 
-            lockOnInstance.transform.position = lockOnTarget.position;
+            lockOnInstance.transform.position = enemiesOnScreen[enemyIndex].transform.position;
 
             Vector3 lockOnRotation = (lockOnInstance.transform.position - target.position);
 
@@ -256,7 +299,6 @@ public class WadeCamera : MonoBehaviour
 
             lockOnInstance.transform.position = PlayerTarget.transform.position + transform.forward * 50;
             lockedOn = false;
-
         }
 
 
