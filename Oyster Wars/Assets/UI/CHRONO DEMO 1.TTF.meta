@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 702ddc3f67822214ab170ad9102c81cc
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Chrono
+  fontNames:
+  - Chrono
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 4625c8774b4d18b449526eed6a833e0e, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

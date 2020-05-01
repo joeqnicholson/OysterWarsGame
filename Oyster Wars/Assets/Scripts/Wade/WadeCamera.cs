@@ -148,7 +148,7 @@ public class WadeCamera : MonoBehaviour
             }
 
             Quaternion desiredRot = Quaternion.Euler(tilt, heading, 0);
-            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRot, 7f * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, desiredRot, 12f * Time.deltaTime);
 
             Vector3 desiredPos = target.position - transform.forward * Distance;
             transform.position = desiredPos + Vector3.up * offsetY;

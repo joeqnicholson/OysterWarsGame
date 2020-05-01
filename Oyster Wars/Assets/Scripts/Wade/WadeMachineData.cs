@@ -5,7 +5,7 @@ using UnityEngine;
 public partial class WadeMachine : MonoBehaviour
 {
 
-
+  
 
     public class JumpProfile
     {
@@ -169,19 +169,22 @@ public partial class WadeMachine : MonoBehaviour
 
     public void DoTakeDamage(float damage)
     {
-        if (!isHit)
+        if (CurrentWadeState != WadeState.Hit && CurrentWadeState != WadeState.Death)
         {
             health -= damage;
+
+            if (health > 0)
+            {
+                TransitionToState(WadeState.Hit);
+            }
+            else
+            {
+                TransitionToState(WadeState.Death);
+            }
+
         }
 
-        if(health > 0)
-        {
-            TransitionToState(WadeState.Hit);
-        }
-        else
-        {
-            TransitionToState(WadeState.Death);
-        }
+       
         
     }
 
@@ -283,9 +286,10 @@ public partial class WadeMachine : MonoBehaviour
         if (!lockedOn)
         {
 
-            if (stateString == "AirAction")
+            if (stateString == "Jump" && currentJumpProfile == frontFlip)
             {
-                gun.rotation = gunParentBone.rotation;
+                gun.rotation = Quaternion.Euler(transform.localRotation.eulerAngles.x + gunTurnx, transform.localRotation.eulerAngles.y + gunTurny, transform.localRotation.eulerAngles.z + gunTurnx );
+
             }
             else
             {
@@ -294,16 +298,17 @@ public partial class WadeMachine : MonoBehaviour
         }
         else
         {
-            if (stateString != "AirAction")
+            if (stateString == "Jump" && currentJumpProfile == frontFlip)
+            {
+                gun.rotation = Quaternion.Euler(transform.localRotation.eulerAngles.x + gunTurnx, transform.localRotation.eulerAngles.y + gunTurny, transform.localRotation.eulerAngles.z + gunTurnx);
+
+            }
+            else
             {
                 Vector3 lockOnRotation = (cubeTarget.position - gun.position);
                 Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
                 Debug.DrawLine(gun.position, cubeTarget.position, Color.red);
                 gun.rotation = lookRotation;
-            }
-            else
-            {
-                gun.rotation = gunParentBone.rotation;
             }
 
 
