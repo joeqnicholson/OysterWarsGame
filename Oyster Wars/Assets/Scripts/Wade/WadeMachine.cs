@@ -16,6 +16,9 @@ public enum WadeState
 //[RequireComponent(typeof(WadeInputs))]  
 public partial class WadeMachine : MonoBehaviour, ICharacterController
 {
+    public float gunTurnz;
+    public float gunTurny;
+    public float gunTurnx;
 
     [Header("Active Wade Stats")]
     public float moveSpeed;
@@ -26,8 +29,6 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public float startHealth = 100;
     public int pearls = 0;
     public float stateTimer;
-    bool isHit = false;
-
 
     [Header("Walking")]
     public float correctedWalkSpeed;
@@ -54,6 +55,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     float minJumpVelocity;
     public float maxVM;
     public float minVM;
+    public bool hasShotInAir;
+    public float airShotAnimationMatch;
 
 
 
@@ -74,6 +77,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
     [Header("Hit")]
     public float recoveryTime;
+    public float deathTime;
+    public bool hasDied;
 
 
 
@@ -140,6 +145,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public Image healthBar;
     public Image ammoBar;
     public Text pearlsCount;
+    public PauseMenu pause;
+    public GameObject gameOver;
     Transform cubeTarget;
 
     public string stateString;
@@ -151,8 +158,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
     private void Start()
     {
-        
-       
+
+        pause = GameObject.Find("Pause").GetComponent<PauseMenu>();
         health = startHealth;
         bullets = clipSize;
         canShoot = true;
@@ -191,17 +198,20 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         {
             case WadeState.Idle:
                 {
-                        
+                    stateTimer = 0;
                     PlayerAnimator.SetBool("Idle", true);
                     break;
                 }
             case WadeState.Walk:
                 {
+                    stateTimer = 0;
                     PlayerAnimator.SetBool("Walk", true);
                     break;
                 }
             case WadeState.Jump:
                 {
+                    stateTimer = 0;
+
                     PlayerAnimator.SetBool(currentJumpProfile.Animation, true);
                     Motor.ForceUnground();
 
@@ -214,6 +224,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         cachedDirection = LocalMovement();
                     }
 
+                    hasShotInAir = false;
 
                     planarMoveDirection = planarMoveDirection * currentJumpProfile.planarMultiplier;
 
@@ -248,6 +259,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.AirAction:
                 {
+                    stateTimer = 0;
                     if (lockedOn)
                     {
                         if(LocalMovement().magnitude > .05f)
@@ -279,14 +291,19 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     //}
 
                     cachedDirection = LocalMovement();
-
+                    stateTimer = 0;
                     bullets -= 1;
                     shotTimer = 0;
                     moveSpeed += dashSpeed;
                     PlayerAnimator.SetBool("Dash", true);
                     break;
                 }
-
+            case WadeState.Death:
+                {
+                    stateTimer = 0;
+                    hasDied = false;
+                    break;
+                }
         }
     }
 
@@ -360,6 +377,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
     public void Update()
     {
+
+
         pearlsCount.text = pearls.ToString();
         cubeTarget = camObject.GetComponent<WadeCamera>().lockOnInstance.transform;
         DoUI();
@@ -367,7 +386,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         angle = Vector3.Angle(transform.forward, LocalMovement());
         stateString = CurrentWadeState.ToString();
 
-        Time.timeScale = timeScale;
+        //Time.timeScale = timeScale;
         PlayerAnimator.SetFloat("Speed", input.Current.MoveInput.magnitude);
         wadeVelocity = Motor.Velocity;
         Shooting();
@@ -524,7 +543,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.Jump:
                 {
-
+                    stateTimer += Time.deltaTime;
                     if (Input.GetButtonDown("RightBumper"))
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
@@ -547,6 +566,16 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                                 lockedOn = true;
                             }
                         }
+                    }
+
+                    if (currentJumpProfile == frontFlip && !hasShotInAir && stateTimer > airShotAnimationMatch)
+                    {
+                        Instantiate(bullet, gun.position, gun.rotation);
+                        bullets -= 1;
+                        shotTimer = 0;
+
+                        wadeSound.PlayRifleShot();
+                        hasShotInAir = true;
                     }
 
                     if (Input.GetButtonDown("B"))
@@ -583,6 +612,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                             TransitionToState(WadeState.WallSlide);
                         }
                     }
+
+                    ShootControls();
 
                     break;
                 }
@@ -670,12 +701,9 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         {
                             if (canShoot)
                             {
-                                Instantiate(bullet, gun.position, gun.rotation);
-                                bullets -= 1;
-                                shotTimer = 0;
                                 currentJumpProfile = frontFlip;
                                 TransitionToState(WadeState.Jump);
-                                wadeSound.PlayRifleShot();
+
                                 triggerInUse = true;
                             }
                         }
@@ -740,6 +768,19 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     if(stateTimer > recoveryTime)
                     {
                         TransitionToState(WadeState.Idle);
+                    }
+                    break;
+                }
+            case WadeState.Death:
+                {
+                    GameObject pause = GameObject.Find("Pause");
+                    Destroy(pause);
+
+                    stateTimer += Time.deltaTime;
+                    if(stateTimer > deathTime && !hasDied)
+                    {
+                        Instantiate(gameOver);
+                        hasDied = true;
                     }
                     break;
                 }
@@ -1076,6 +1117,13 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
             case WadeState.Hit:
                 {
                     moveSpeed = Mathf.Lerp(moveSpeed, 0, walkDecel * Time.deltaTime);
+                    //moveSpeed = 0;
+                    currentVelocity = Vector3.Lerp(currentVelocity, transform.forward * moveSpeed, 10 * deltaTime);
+                    break;
+                }
+            case WadeState.Death:
+                {
+                    moveSpeed = Mathf.Lerp(moveSpeed, 0, walkDecel * 4 * Time.deltaTime);
                     //moveSpeed = 0;
                     currentVelocity = Vector3.Lerp(currentVelocity, transform.forward * moveSpeed, 10 * deltaTime);
                     break;
