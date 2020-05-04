@@ -94,8 +94,10 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public bool triggerInUse;
     public float LockOnFollowTime;
     public float LockOnWalkSpeed;
+    public bool aiming;
     public bool lockedOn = false;
     public bool canLockOn = false;
+    public float aimingWalkSpeed;
 
     [Header("Grenades")]
     public float throwForce;
@@ -382,6 +384,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         pearlsCount.text = pearls.ToString();
         cubeTarget = camObject.GetComponent<WadeCamera>().lockOnInstance.transform;
         DoUI();
+        DoAiming();
         blendAngle = Vector3.Angle(transform.forward, LocalMovement()) * input.Current.MoveInput.x;
         angle = Vector3.Angle(transform.forward, LocalMovement());
         stateString = CurrentWadeState.ToString();
@@ -580,10 +583,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if (Input.GetButtonDown("B"))
                     {
-                        if (canShoot)
-                        {
-                            TransitionToState(WadeState.Dash);
-                        }
+                       TransitionToState(WadeState.Dash);
                     }
 
                     if (input.Current.SlashInput)
@@ -833,33 +833,33 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         {
             case WadeState.Idle:
                 {
-                    if (lockedOn)
-                    {
-                        Vector3 lockOnRotation = (cubeTarget.position - transform.position);
-                        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
-                        lookRotation.x = 0;
-                        lookRotation.z = 0;
-                        currentRotation = Quaternion.Slerp(currentRotation, lookRotation, LockOnFollowTime * Time.deltaTime);
-                    }
+                    //if (lockedOn)
+                    //{
+                    //    Vector3 lockOnRotation = (cubeTarget.position - transform.position);
+                    //    Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+                    //    lookRotation.x = 0;
+                    //    lookRotation.z = 0;
+                    //    currentRotation = Quaternion.Slerp(currentRotation, lookRotation, LockOnFollowTime * Time.deltaTime);
+                    //}
                     //currentRotation = currentRotation;
                     break;
                 }
             case WadeState.Walk:
                 {
-                    if (input.Current.MoveInput.magnitude > .1f && !lockedOn)
+                    if (input.Current.MoveInput.magnitude > .1f)
                     {
                         turnSpeed = Mathf.Lerp(turnSpeedSlow, turnSpeedFast, moveSpeed);
                         Quaternion desiredAngle = Quaternion.LookRotation(LocalMovement());
                         currentRotation = Quaternion.Lerp(currentRotation, desiredAngle, turnSpeed * Time.deltaTime);
                     }
-                    else if(lockedOn)
-                    {
-                        Vector3 lockOnRotation = (cubeTarget.position - transform.position);
-                        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
-                        lookRotation.x = 0;
-                        lookRotation.z = 0;
-                        currentRotation = Quaternion.Slerp(currentRotation, lookRotation, LockOnFollowTime * Time.deltaTime);
-                    }
+                    //else if(lockedOn)
+                    //{
+                    //    Vector3 lockOnRotation = (cubeTarget.position - transform.position);
+                    //    Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+                    //    lookRotation.x = 0;
+                    //    lookRotation.z = 0;
+                    //    currentRotation = Quaternion.Slerp(currentRotation, lookRotation, LockOnFollowTime * Time.deltaTime);
+                    //}
 
                     break;
                 }
@@ -885,14 +885,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.AirAction:
                 {
-                    if (lockedOn)
-                    {
-                        if(LocalMovement().magnitude > 0.1f)
-                        {
-                            Quaternion desiredAngle = Quaternion.LookRotation(cachedTurnDirection);
-                            currentRotation = Quaternion.Slerp(currentRotation, desiredAngle, slashTurnSpeed);
-                        }
-                    }
+                    //if (lockedOn)
+                    //{
+                    //    if(LocalMovement().magnitude > 0.1f)
+                    //    {
+                    //        Quaternion desiredAngle = Quaternion.LookRotation(cachedTurnDirection);
+                    //        currentRotation = Quaternion.Slerp(currentRotation, desiredAngle, slashTurnSpeed);
+                    //    }
+                    //}
                     break;
                 }
             case WadeState.Dash:
@@ -938,14 +938,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     moveSpeed = Mathf.Lerp(moveSpeed, correctedWalkSpeed, walkAccel * Time.deltaTime);
 
 
-                    if (lockedOn)
-                    {
-                        currentVelocity = Vector3.Lerp(currentVelocity, LocalMovement() * moveSpeed, 10 * deltaTime);
-                    }
-                    else
-                    {
+                    //if (lockedOn)
+                    //{
+                    //    currentVelocity = Vector3.Lerp(currentVelocity, LocalMovement() * moveSpeed, 10 * deltaTime);
+                    //}
+                    //else
+                    //{
                         currentVelocity = Vector3.Lerp(currentVelocity, transform.forward * LocalMovement().magnitude * moveSpeed, 10 * deltaTime);
-                    }                    
+                    //}                    
                     break;
                 }
             case WadeState.Jump:
@@ -1123,9 +1123,22 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.Death:
                 {
+
+                    if (!Motor.GroundingStatus.FoundAnyGround)
+                    {
+                        Gravity = -40;
+                    }
+                    else
+                    {
+                        Gravity = 0;
+                        verticalMoveSpeed = 0;
+                    }
+
+                    verticalMoveSpeed += Gravity;
+
                     moveSpeed = Mathf.Lerp(moveSpeed, 0, walkDecel * 4 * Time.deltaTime);
                     //moveSpeed = 0;
-                    currentVelocity = Vector3.Lerp(currentVelocity, transform.forward * moveSpeed, 10 * deltaTime);
+                    currentVelocity = transform.forward * moveSpeed + Motor.CharacterUp * verticalMoveSpeed;
                     break;
                 }
         }

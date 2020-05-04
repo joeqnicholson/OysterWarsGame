@@ -17,7 +17,7 @@ public class Grenade : MonoBehaviour
     {
         wade = GameObject.Find("Wade");
 
-        Physics.IgnoreCollision(GetComponent<Collider>(), wade.GetComponent<Collider>());
+        Physics.IgnoreCollision(GetComponent<Collider>(), wade.GetComponent<CapsuleCollider>());
     }
 
     // Update is called once per frame

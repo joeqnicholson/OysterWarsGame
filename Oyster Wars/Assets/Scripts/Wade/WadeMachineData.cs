@@ -262,10 +262,14 @@ public partial class WadeMachine : MonoBehaviour
         {
             correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, reloadWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
         }
+        else if (aiming)
+        {
+            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, aimingWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
+        }
         else if (lockedOn)
         {
             correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, LockOnWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
-        } 
+        }
         else
         {
             correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, walkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
@@ -283,8 +287,8 @@ public partial class WadeMachine : MonoBehaviour
 
 
 
-        if (!lockedOn)
-        {
+        //if (!lockedOn)
+        //{
 
             if (stateString == "Jump" && currentJumpProfile == frontFlip)
             {
@@ -295,24 +299,24 @@ public partial class WadeMachine : MonoBehaviour
             {
                 gun.rotation = transform.rotation;
             }
-        }
-        else
-        {
-            if (stateString == "Jump" && currentJumpProfile == frontFlip)
-            {
-                gun.rotation = Quaternion.Euler(transform.localRotation.eulerAngles.x + gunTurnx, transform.localRotation.eulerAngles.y + gunTurny, transform.localRotation.eulerAngles.z + gunTurnx);
+        //}
+        //else
+        //{
+        //    if (stateString == "Jump" && currentJumpProfile == frontFlip)
+        //    {
+        //        gun.rotation = Quaternion.Euler(transform.localRotation.eulerAngles.x + gunTurnx, transform.localRotation.eulerAngles.y + gunTurny, transform.localRotation.eulerAngles.z + gunTurnx);
 
-            }
-            else
-            {
-                Vector3 lockOnRotation = (cubeTarget.position - gun.position);
-                Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
-                Debug.DrawLine(gun.position, cubeTarget.position, Color.red);
-                gun.rotation = lookRotation;
-            }
+        //    }
+        //    else
+        //    {
+        //        Vector3 lockOnRotation = (cubeTarget.position - gun.position);
+        //        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+        //        Debug.DrawLine(gun.position, cubeTarget.position, Color.red);
+        //        gun.rotation = lookRotation;
+        //    }
 
 
-        }
+        //}
 
         //if (input.Current.ShootInput && canShoot && shotTimer > 0.5f)
         //{
@@ -323,7 +327,17 @@ public partial class WadeMachine : MonoBehaviour
         //}
     }
 
-
+    void DoAiming()
+    {
+        if (Input.GetAxisRaw("LeftTrigger") != 0)
+        {
+            aiming = true;
+        }
+        if (Input.GetAxisRaw("LeftTrigger") == 0)
+        {
+            aiming = false;
+        }
+    }
 }
 
 

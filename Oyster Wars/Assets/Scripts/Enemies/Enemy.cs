@@ -18,6 +18,7 @@ public class Enemy : MonoBehaviour
     public Image healthBar;
     public Canvas healthCanvas;
     public bool added = false;
+    public Vector3 enemyPosition;
 
     public void DoTakeDamage(float damage)
     {
@@ -32,12 +33,12 @@ public class Enemy : MonoBehaviour
     public void DoTargeting()
     {
         //First Create A Vector3 With Dimensions Based On The Camera's Viewport
-        Vector3 enemyPosition = cam.WorldToViewportPoint(gameObject.transform.position);
+         enemyPosition = cam.WorldToViewportPoint(gameObject.transform.position);
 
         //If The X And Y Values Are Between 0 And 1, The Enemy Is On Screen
-        bool onScreen = enemyPosition.z > 0 && enemyPosition.x > 0 && enemyPosition.x < 1 && enemyPosition.y > 0 && enemyPosition.y < 1;
+        bool onScreen = enemyPosition.z > 0 && enemyPosition.z < 50 && enemyPosition.x > 0 && enemyPosition.x < 1 && enemyPosition.y > 0 && enemyPosition.y < 1;
 
-        if (onScreen && !added)
+        if (onScreen && !added && enemyPosition.z < 40)
         {
             wadeCamera.enemiesOnScreen.Add(transform);
             added = true;
