@@ -211,8 +211,8 @@ public class WadeCamera : MonoBehaviour
         foreach (Transform enemy in enemiesOnScreen)
         {
             Vector3 enemyPosition = GetComponent<Camera>().WorldToViewportPoint(enemy.position);
-            bool onScreen = enemyPosition.z > 0 && enemyPosition.x > 0 && enemyPosition.x < 1 && enemyPosition.y > 0 && enemyPosition.y < 1;
-
+            bool onScreen = enemyPosition.z > 0 && enemyPosition.z < 50 && enemyPosition.x > 0 && enemyPosition.x < 1 && enemyPosition.y > 0 && enemyPosition.y < 1;
+            
             if (i < enemyIndex && !onScreen)
             {
                 enemyIndex -= 1;
