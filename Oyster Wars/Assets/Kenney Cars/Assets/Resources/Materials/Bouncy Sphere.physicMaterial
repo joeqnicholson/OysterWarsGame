@@ -8,7 +8,7 @@ PhysicMaterial:
   m_PrefabAsset: {fileID: 0}
   m_Name: Bouncy Sphere
   dynamicFriction: 0.25
-  staticFriction: 0.25
-  bounciness: 1
+  staticFriction: 0.68
+  bounciness: 0.24
   frictionCombine: 0
   bounceCombine: 0

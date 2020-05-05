@@ -292,7 +292,16 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     //    cachedDirection = transform.forward;
                     //}
 
-                    cachedDirection = LocalMovement();
+                    if(LocalMovement().magnitude < 0.1f)
+                    {
+                        cachedDirection = transform.forward;
+                    }
+                    else
+                    {
+                        cachedDirection = LocalMovement();
+                    }
+
+                    
                     stateTimer = 0;
                     bullets -= 1;
                     shotTimer = 0;
@@ -898,7 +907,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
             case WadeState.Dash:
                 {
 
-                    Quaternion desiredAngle = Quaternion.LookRotation(LocalMovement());
+                    Quaternion desiredAngle = Quaternion.LookRotation(cachedDirection);
                     currentRotation = Quaternion.Lerp(currentRotation, desiredAngle, slashTurnSpeed * Time.deltaTime);
                     break;
                 }
