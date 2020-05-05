@@ -32,6 +32,7 @@ public class Vehicle : MonoBehaviour{
 	[Header("Parameters")]
 	
 	[Range(100.0f, 1000.0f)] public float acceleration = 30f;
+	[Range(10.0f, 100.0f)] public float turnMulti = 30f;
 	[Range(20.0f, 160.0f)] public float steering = 80f;
 	[Range(50.0f, 80.0f)] public float jumpForce = 60f;
 	[Range(0.0f, 20.0f)] public float gravity = 10f;
@@ -137,7 +138,7 @@ public class Vehicle : MonoBehaviour{
 		if(wheelFrontLeft != null){  wheelFrontLeft.localRotation  = Quaternion.Euler(0, rotateTarget / 2, 0); }
 		if(wheelFrontRight != null){ wheelFrontRight.localRotation = Quaternion.Euler(0, rotateTarget / 2, 0); }
 		
-		body.localRotation = Quaternion.Slerp(body.localRotation, Quaternion.Euler(new Vector3(-speedTarget / 28, 0, rotateTarget / 28)), Time.deltaTime * 4.0f);
+		body.localRotation = Quaternion.Slerp(body.localRotation, Quaternion.Euler(new Vector3(-speedTarget / 28, 0, rotateTarget / turnMulti)), Time.deltaTime * 4.0f);
 		
 		// Vehicle tilt
 		
