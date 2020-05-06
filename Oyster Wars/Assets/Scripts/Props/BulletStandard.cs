@@ -8,50 +8,21 @@ public class BulletStandard : MonoBehaviour
     public float hitDist;
     public Rigidbody rb;
     public int damage;
+    public bool wadesBullet;
     public GameObject explosionEffect;
-    public SphereCollider boat;
+    public CapsuleCollider boat;
 
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        boat = GameObject.Find("boatsphere").GetComponent<SphereCollider>();
+
+        boat = GameObject.Find("WadeBoat").GetComponent<CapsuleCollider>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //RaycastHit hit;
-        //if(Physics.Raycast(transform.position, transform.forward, out hit, hitDist))
-        //{
-        //    Enemy enemy = hit.collider.gameObject.GetComponent<Enemy>();
-        //    WadeMachine wade = hit.collider.gameObject.GetComponent<WadeMachine>();
-
-        //    if (wade != null)
-        //    {
-        //        wade.DoTakeDamage(damage);
-        //    }
-
-        //    if (enemy != null)
-        //    {
-        //        enemy.DoTakeDamage(damage);
-        //    }
-
-        //    if(hit.collider.gameObject.name == "boatsphere")
-        //    {
-        //        print("YAY");
-        //    }
-        //    else
-        //    {
-        //        Instantiate(explosionEffect, transform.position, transform.rotation);
-        //        Destroy(gameObject);
-        //    }
-            
-        //}
-
-
-
-
         rb.velocity = transform.forward * speed;
     }
 
@@ -64,23 +35,26 @@ public class BulletStandard : MonoBehaviour
 
         if (wade != null)
         {
-            wade.DoTakeDamage(damage);
+            if (!wadesBullet)
+            {
+                wade.DoTakeDamage(damage);
+                Instantiate(explosionEffect, transform.position, transform.rotation);
+                Destroy(gameObject);
+            }
         }
 
         if (enemy != null)
         {
             enemy.DoTakeDamage(damage);
-        }
-
-        if (other.gameObject.name == "boatsphere" || bullet != null)
-        {
-            print("YAY");
-        }
-        else
-        {
             Instantiate(explosionEffect, transform.position, transform.rotation);
             Destroy(gameObject);
         }
 
+
+        if(wade == null)
+        {
+            Instantiate(explosionEffect, transform.position, transform.rotation);
+            Destroy(gameObject);
+        }   
     }
 }

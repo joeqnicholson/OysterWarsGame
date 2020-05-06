@@ -186,7 +186,7 @@ MonoBehaviour:
   pearls: 0
   stateTimer: 0
   correctedWalkSpeed: 0
-  walkSpeed: 9
+  walkSpeed: 11.5
   walkAccel: 56
   walkDecel: 56
   turnSpeedFast: 15
@@ -206,6 +206,8 @@ MonoBehaviour:
   minVM: -30
   hasShotInAir: 0
   airShotAnimationMatch: 0.12
+  boatRelativeJumpMove: {x: 0, y: 0, z: 0}
+  takeBoatVelocity: 0
   slashInteruptionTimer: 0
   slamTimer: 0
   slamStartTime: 0
@@ -256,12 +258,12 @@ MonoBehaviour:
   gun: {fileID: 8886862544158358028}
   gunParentBone: {fileID: 5157077251668138279}
   ledge: {fileID: 0}
-  camFollow: {fileID: 0}
-  bullet: {fileID: 5668629452719038267, guid: 63c96f6239daa994ab5d432b1be99dea, type: 3}
-  wadeboat: {fileID: 0}
+  camFollow: {fileID: 7096401229786833791}
+  bullet: {fileID: 5216576217883653464, guid: 7b1e230b41352bf46b808ca316081353, type: 3}
   grenade: {fileID: 9125040073943332622, guid: c260f2ba8cb9bc042a09248a995054a5, type: 3}
   IgnoredColliders:
   - {fileID: 9125040073943332620, guid: c260f2ba8cb9bc042a09248a995054a5, type: 3}
+  - {fileID: 0}
   - {fileID: 0}
   audio: {fileID: 0}
   wadeSound: {fileID: 0}
@@ -271,6 +273,7 @@ MonoBehaviour:
   pause: {fileID: 0}
   gameOver: {fileID: 1087652365898617486, guid: a30e69a72cc4c1148a7c2237e073ce69,
     type: 3}
+  boat: {fileID: 5216576217883653464, guid: 7b1e230b41352bf46b808ca316081353, type: 3}
   stateString: 
   timeScale: 1
 --- !u!114 &8467298112416657777
@@ -1473,12 +1476,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: e34e18f78d4d6bd43b78d960ffdf851e, type: 2}
+      objectReference: {fileID: 2100000, guid: fc1d9f51c29bed5478f253d2ad22d53a, type: 2}
     - target: {fileID: -7780734103960978560, guid: b4f874d9b3a812e4cb33f3690a960481,
         type: 3}
       propertyPath: m_Materials.Array.data[1]
       value: 
-      objectReference: {fileID: 2100000, guid: e34e18f78d4d6bd43b78d960ffdf851e, type: 2}
+      objectReference: {fileID: 2100000, guid: fc1d9f51c29bed5478f253d2ad22d53a, type: 2}
     - target: {fileID: -4216859302048453862, guid: b4f874d9b3a812e4cb33f3690a960481,
         type: 3}
       propertyPath: m_LocalPosition.x

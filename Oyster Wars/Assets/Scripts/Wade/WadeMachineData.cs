@@ -228,30 +228,13 @@ public partial class WadeMachine : MonoBehaviour
     {
         shotTimer += Time.deltaTime;
 
-        if (reloading || boltActionTime > shotTimer)
+        if (boltActionTime > shotTimer)
         {
             canShoot = false;
         }
         else
         {
             canShoot = true;
-        }
-
-        if (bullets == 0)
-        {
-            canShoot = false;
-        }
-
-        if (shotTimer > reloadSpeed && reloading)
-        {
-            bullets += 1;
-            shotTimer = 0;
-        }
-
-        if (bullets == clipSize && reloading)
-        {
-            bullets = clipSize;
-            reloading = false;
         }
 
 
