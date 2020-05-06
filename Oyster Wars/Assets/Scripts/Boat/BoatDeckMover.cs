@@ -24,7 +24,7 @@ namespace KinematicCharacterController
         public void UpdateMovement(out Vector3 goalPosition, out Quaternion goalRotation, float deltaTime)
         {
             goalPosition = Hull.position + Vector3.up * offsetUp;
-            goalRotation = Hull.rotation;
+            goalRotation = Quaternion.Euler(-Hull.localRotation.eulerAngles.x,Hull.localRotation.eulerAngles.y + 180,-Hull.localRotation.eulerAngles.z);
         }
     }
 }

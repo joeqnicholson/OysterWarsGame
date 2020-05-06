@@ -22,11 +22,11 @@ public partial class WadeSound : MonoBehaviour
 
     public void PlayRifleShot()
     {
-        SoundSource.PlayOneShot(rifleShot, 0.5f);
+        SoundSource.PlayOneShot(rifleShot, 0.2f);
     }
 
     public void PlayFootSteps()
     {
-        SoundSource.PlayOneShot(footStep);
+        SoundSource.PlayOneShot(footStep, 0.5f);
     }
 }

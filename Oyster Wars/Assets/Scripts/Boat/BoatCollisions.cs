@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class BoatCollisions : MonoBehaviour
 {
-    public GameObject wade;
+    public GameObject wadeboat;
 
         void Start()
         {
 
-        wade = GameObject.Find("Wade");
+        wadeboat = GameObject.Find("WadeBoat");
 
-            Physics.IgnoreCollision(GetComponent<Collider>(), wade.GetComponent<Collider>());
+            Physics.IgnoreCollision(GetComponent<Collider>(), wadeboat.GetComponent<CapsuleCollider>());
         }
 }
 

@@ -2,6 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
+
+public enum WadeCameraState
+{
+
+}
 public class WadeCamera : MonoBehaviour
 {
 
@@ -90,6 +95,8 @@ public class WadeCamera : MonoBehaviour
         HandleCollision();
 
 
+
+
         heading = heading % 360;
 
         if (!lockedOn)
@@ -124,23 +131,6 @@ public class WadeCamera : MonoBehaviour
             if (machine.stateString == "Drive")
             {
                 
-                if (Mathf.Abs(input.Current.MoveInput.x) > 0.1f)
-                {
-                    
-
-                    boatOrbit = Mathf.Lerp(boatOrbit, boatAutoOrbitSpeed, 4 * Time.deltaTime);
-                    if (input.Current.MouseInput.magnitude < 0.1f)
-                    {
-                        heading += boatOrbit * input.Current.MoveInput.x * Time.deltaTime;
-
-                    }
-                }
-                else
-                {
-                    boatOrbit = 0;
-
-                }
-                maxDistance = Mathf.Lerp(maxDistance, boatDistance, 6 * Time.deltaTime);
             }
             else
             {
