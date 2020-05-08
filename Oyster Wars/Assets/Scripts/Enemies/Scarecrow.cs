@@ -27,6 +27,8 @@ public class Scarecrow : Enemy, ICharacterController
     public float idleWaitTime;
     public float endChargeTime;
     public float wadeDistance;
+    public GameObject characterMesh;
+    public Animator animator;
 
     public KinematicCharacterMotor Motor;
     public ScarecrowState CurrentScarecrowState { get; private set; }
@@ -37,10 +39,10 @@ public class Scarecrow : Enemy, ICharacterController
     {
         cam = GameObject.Find("Camera").GetComponent<Camera>();
         wadeCamera = GameObject.Find("Camera").GetComponent<WadeCamera>();
+        
         Motor.CharacterController = this;
         turnSpeed = scareCrowTurnSpeed;
         TransitionToState(ScarecrowState.Shooting);
-        wade = GameObject.Find("Wade").transform;
         health = startHealth;
     }
 
@@ -60,12 +62,19 @@ public class Scarecrow : Enemy, ICharacterController
         {
             case ScarecrowState.Idle:
                 {
+                    animator.SetBool("Idle", true);
                     dropTimer = 0;
                     stateTimer = 0;
                     break;
                 }
             case ScarecrowState.Shooting:
                 {
+
+                    Vector3 lockOnRotation = (wade.position - transform.position);
+                    Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
+                    GameObject tempBullet = Instantiate(bullet, transform.position + transform.forward * 4, lookRotation) as GameObject;
+
+                    animator.SetBool("Shoot", true);
                     dropTimer = 0;
                     stateTimer = 0;
 
@@ -90,6 +99,16 @@ public class Scarecrow : Enemy, ICharacterController
     {
         switch (state)
         {
+            case ScarecrowState.Idle:
+                {
+                    animator.SetBool("Idle", false);
+                    break;
+                }
+            case ScarecrowState.Shooting:
+                {
+                    animator.SetBool("Shoot", false);
+                    break;
+                }
             case ScarecrowState.Fall:
                 {
                     verticalMoveSpeed = 0;
@@ -141,15 +160,7 @@ public class Scarecrow : Enemy, ICharacterController
                 {
                     stateTimer += Time.deltaTime;
                     dropTimer += Time.deltaTime;
-                    Vector3 lockOnRotation = (wade.position - transform.position);
-                    Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
-
-
-                    if (dropTimer > dropFrequency * 4 && wadeDistance < startChargingDistance)
-                    {
-                        GameObject tempBullet = Instantiate(bullet, transform.position + transform.forward * 4, lookRotation) as GameObject;
-                        dropTimer = 0;
-                    }
+                    
 
                     if (stateTimer > idleWaitTime)
                     {

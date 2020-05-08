@@ -134,7 +134,7 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
                 {
                     boatZrotation = Mathf.Lerp(boatZrotation, -turnInput * leanFactor, leanSpeed * deltaTime);
                     boatXrotation = Mathf.Lerp(boatXrotation, -accelerationInput * leanFactor / 2, leanSpeed * deltaTime);
-                    boatYrotation += turnInput * Mathf.Lerp( 0, turnSpeed, turnAcceleration * deltaTime);
+                    boatYrotation += turnInput * Mathf.Lerp( 0, turnSpeed * 1.6f, turnAcceleration * deltaTime);
 
                     Quaternion desiredRotation = Quaternion.Euler(boatXrotation, boatYrotation, boatZrotation);
                     currentRotation = Quaternion.Slerp(currentRotation, desiredRotation, turnAcceleration * deltaTime);

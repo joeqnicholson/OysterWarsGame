@@ -31,8 +31,8 @@ public partial class WadeMachine : MonoBehaviour
     {
         Animation = "Jump",
         CanControlHeight = true,
-        JumpHeight = 4f,
-        timeToJumpApex = .4f,
+        JumpHeight = 4.5f,
+        timeToJumpApex = .463f,
     };
 
     
@@ -100,7 +100,6 @@ public partial class WadeMachine : MonoBehaviour
     public void DoUI()
     {
         healthBar.fillAmount = (health / startHealth);
-        ammoBar.fillAmount = (bullets / clipSize);
     }
 
     private void FollowBlock()
@@ -197,7 +196,6 @@ public partial class WadeMachine : MonoBehaviour
                 if (canShoot)
                 {
                     Instantiate(bullet, gun.position, gun.rotation);
-                    bullets -= 1;
                     shotTimer = 0;
                     triggerInUse = true;
                     wadeSound.PlayRifleShot();
@@ -209,19 +207,7 @@ public partial class WadeMachine : MonoBehaviour
             triggerInUse = false;
         }
 
-        if (bullets < clipSize)
-        {
-            if (Input.GetButtonDown("Action"))
-            {
-                reloading = true;
-            }
-
-            if (Input.GetButtonUp("Action"))
-            {
-                reloading = false;
-                shotTimer = 0;
-            }
-        }
+        
     }
 
     void Shooting()
@@ -241,17 +227,9 @@ public partial class WadeMachine : MonoBehaviour
         
 
 
-        if (reloading )
-        {
-            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, reloadWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
-        }
-        else if (aiming)
+        if (aiming)
         {
             correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, aimingWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
-        }
-        else if (lockedOn)
-        {
-            correctedWalkSpeed = Mathf.Lerp(correctedWalkSpeed, LockOnWalkSpeed, walkSpeedsTransitionTime * Time.deltaTime);
         }
         else
         {

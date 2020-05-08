@@ -945,7 +945,7 @@ MonoBehaviour:
   RigidbodyInteractionType: 0
   PreserveAttachedRigidbodyMomentum: 1
   HasPlanarConstraint: 1
-  PlanarConstraintAxis: {x: 0, y: 0, z: 0}
+  PlanarConstraintAxis: {x: 0, y: 50, z: 0}
 --- !u!114 &5363310196071195155
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -963,15 +963,15 @@ MonoBehaviour:
   accelerationInput: 0
   acceleration: 5
   deceleration: 0.5
-  engineSpeed: 45
+  engineSpeed: 30
   moveSpeed: 0
-  turnSpeed: 12
+  turnSpeed: 8
   turnAcceleration: 6
   boatYrotation: 0
   turnInput: 0
   stateString: 
-  leanFactor: 10
-  leanSpeed: 8
+  leanFactor: 7
+  leanSpeed: 5
   boatZrotation: 0
   boatXrotation: 0
   currentVelocity: {x: 0, y: 0, z: 0}
@@ -1062,17 +1062,17 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 936f7d84f8103d845882cb9a067e6a30,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 936f7d84f8103d845882cb9a067e6a30,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 936f7d84f8103d845882cb9a067e6a30,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: -1504981713932161579, guid: 936f7d84f8103d845882cb9a067e6a30,
         type: 3}
