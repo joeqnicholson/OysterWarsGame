@@ -72,7 +72,12 @@ public class Scarecrow : Enemy, ICharacterController
 
                     Vector3 lockOnRotation = (wade.position - transform.position);
                     Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
-                    GameObject tempBullet = Instantiate(bullet, transform.position + transform.forward * 4, lookRotation) as GameObject;
+
+                    if(wadeDistance < startChargingDistance + 6)
+                    {
+                        GameObject tempBullet = Instantiate(bullet, transform.position + transform.forward * 4, lookRotation) as GameObject;
+                    }
+                    
 
                     animator.SetBool("Shoot", true);
                     dropTimer = 0;
