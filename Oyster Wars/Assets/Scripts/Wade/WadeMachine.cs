@@ -472,7 +472,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         }
                     }
 
-                    if (!Motor.GroundingStatus.FoundAnyGround)
+                    if (!Motor.GroundingStatus.IsStableOnGround)
                     {
                         currentJumpProfile = groundFall;
                         TransitionToState(WadeState.Jump);
@@ -547,7 +547,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         }
 
 
-                    if (!Motor.GroundingStatus.FoundAnyGround)
+                    if (!Motor.GroundingStatus.IsStableOnGround)
                     {
                         currentJumpProfile = groundFall;
                         TransitionToState(WadeState.Jump);
@@ -748,7 +748,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if(moveSpeed <= walkSpeed + dashEndSpeedIncrease)
                     {
-                        if (Motor.GroundingStatus.FoundAnyGround)
+                        if (Motor.GroundingStatus.IsStableOnGround)
                         {
                             if (Input.GetButtonDown("Jump"))
                             {
@@ -761,7 +761,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if(moveSpeed <= walkSpeed + 0.1)
                     {
-                        if (Motor.GroundingStatus.FoundAnyGround)
+                        if (Motor.GroundingStatus.IsStableOnGround)
                         {
                             TransitionToState(WadeState.Idle);
                         }
@@ -828,8 +828,13 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         if(pearl != null)
         {
             wadeSound.PlayPearlPickup();
-        }   
-        
+        }
+
+        Enemy enemy = other.GetComponent<Enemy>();
+        if(enemy != null)
+        {
+            DoTakeDamage(enemy.hitPower);
+        }
         
     }
 
@@ -979,7 +984,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.Jump:
                 {
-                    if (Motor.GroundingStatus.FoundAnyGround)
+                    if (Motor.GroundingStatus.IsStableOnGround)
                     {
                         if (LocalMovement().magnitude > 0.02f)
                         {
@@ -1051,7 +1056,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     wallHitInputAngle = Vector3.Angle(LocalMovement(), ledge.middleNorm);
                     wallHitAngle = Vector3.Angle(Motor.CharacterForward, ledge.middleNorm);
 
-                    if (Motor.GroundingStatus.FoundAnyGround)
+                    if (Motor.GroundingStatus.IsStableOnGround)
                     {
                         TransitionToState(WadeState.Idle);
                     }
@@ -1059,7 +1064,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.AirAction:
                 {
-                    if (Motor.GroundingStatus.FoundAnyGround)
+                    if (Motor.GroundingStatus.IsStableOnGround)
                     {
                         if (LocalMovement().magnitude > 0.02f)
                         {
@@ -1149,7 +1154,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
             case WadeState.Death:
                 {
 
-                    if (!Motor.GroundingStatus.FoundAnyGround)
+                    if (!Motor.GroundingStatus.IsStableOnGround)
                     {
                         Gravity = -40;
                     }

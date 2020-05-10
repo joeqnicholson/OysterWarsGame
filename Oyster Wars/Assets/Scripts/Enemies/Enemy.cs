@@ -33,6 +33,7 @@ public class Enemy : MonoBehaviour
     public WadeMachine wadeMachine;
     public Transform groundDetection;
     public Transform groundDetectionFar;
+    public float hitPower;
     public bool groundFar;
     public bool groundFront;
 
@@ -101,7 +102,7 @@ public class Enemy : MonoBehaviour
          enemyPosition = cam.WorldToViewportPoint(gameObject.transform.position);
 
         //If The X And Y Values Are Between 0 And 1, The Enemy Is On Screen
-        bool onScreen = enemyPosition.z > 0 && enemyPosition.z < 50 && enemyPosition.x > 0 && enemyPosition.x < 1 && enemyPosition.y > 0 && enemyPosition.y < 1;
+        bool onScreen = enemyPosition.z > 0 && enemyPosition.z < 90 && enemyPosition.x > 0 && enemyPosition.x < 1 && enemyPosition.y > 0 && enemyPosition.y < 1;
 
         if (onScreen && !added && enemyPosition.z < 40)
         {
@@ -113,6 +114,7 @@ public class Enemy : MonoBehaviour
         {
             added = false;
         }
+
         //else if (!onScreen)
         //{
         //    wadeCamera.enemiesOnScreen.Remove(transform);
@@ -131,7 +133,7 @@ public class Enemy : MonoBehaviour
         grenadeSc.enemyGrenade = true;
         IgnoredColliders.Add(grenadeCollider);
         Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
-        tempGrenadeRB.AddForce(tempGrenade.transform.forward * (WadeDistance() - 8), ForceMode.Impulse);
+        tempGrenadeRB.AddForce(tempGrenade.transform.forward * (WadeDistance() + 1), ForceMode.Impulse);
     }
 
     public void Shoot(string rotation)
@@ -166,6 +168,16 @@ public class Enemy : MonoBehaviour
     {
         RaycastHit hit;
         return (Physics.Raycast(groundDetection.position, Vector3.forward, out hit, 5));
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        WadeMachine wade = other.GetComponent<WadeMachine>();
+        if (wade != null)
+        {
+            wade.DoTakeDamage(hitPower);
+        }
+        print("dfdfs");
     }
 
 }

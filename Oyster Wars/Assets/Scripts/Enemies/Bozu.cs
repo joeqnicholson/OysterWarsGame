@@ -43,6 +43,7 @@ public class Bozu : Enemy, ICharacterController
     private void Start()
     {
         cam = GameObject.Find("Camera").GetComponent<Camera>();
+        wade =  GameObject.Find("Wade").transform;
         wadeCamera = GameObject.Find("Camera").GetComponent<WadeCamera>();
         wadeMachine = GameObject.Find("Wade").GetComponent<WadeMachine>();
         Motor.CharacterController = this;
@@ -441,7 +442,7 @@ public class Bozu : Enemy, ICharacterController
                 }
             case BozuState.Fall:
                 {
-                    verticalMoveSpeed -= Gravity;
+                    verticalMoveSpeed += Gravity;
 
                     currentVelocity = Motor.CharacterForward * moveSpeed + Vector3.up * verticalMoveSpeed;
                     break;
