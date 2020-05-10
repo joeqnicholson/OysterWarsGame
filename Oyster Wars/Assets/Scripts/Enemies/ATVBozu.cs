@@ -198,28 +198,31 @@ public class ATVBozu : Enemy, ICharacterController
             case ATVBozuState.Idle:
                 {
                     stateTimer += Time.deltaTime;
-
-                    if (stateTimer > idleWaitTime && WadeDistance() > startChargingDistance)
+                    if(WadeDistance() < 100)
                     {
-                        int randomStateChange = RandomInt(1,2);
-                        switch (randomStateChange)
+                        if (stateTimer > idleWaitTime && WadeDistance() > startChargingDistance)
                         {
-                            case 1:
-                                {
-                                    TransitionToState(ATVBozuState.Circle);
-                                    break;
-                                }
-                            case 2:
-                                {
-                                    TransitionToState(ATVBozuState.CurveApproach);
-                                    break;
-                                }
+                            int randomStateChange = RandomInt(1, 2);
+                            switch (randomStateChange)
+                            {
+                                case 1:
+                                    {
+                                        TransitionToState(ATVBozuState.Circle);
+                                        break;
+                                    }
+                                case 2:
+                                    {
+                                        TransitionToState(ATVBozuState.CurveApproach);
+                                        break;
+                                    }
+                            }
+                        }
+                        else if (stateTimer > idleWaitTime)
+                        {
+                            TransitionToState(ATVBozuState.Charge);
                         }
                     }
-                    else if (stateTimer > idleWaitTime)
-                    {
-                        TransitionToState(ATVBozuState.Charge);
-                    }
+                    
 
                     break;
                 }

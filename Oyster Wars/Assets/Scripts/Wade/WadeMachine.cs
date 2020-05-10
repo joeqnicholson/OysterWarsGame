@@ -139,6 +139,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public GameObject bullet;
     public GameObject grenade;
     public List<Collider> IgnoredColliders = new List<Collider>();
+    public List<GameObject> bullets = new List<GameObject>();
     public AudioSource audio;
     public WadeSound wadeSound;
     public Image healthBar;
@@ -158,7 +159,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
     private void Start()
     {
-        
+        bullet = bullets[0];
         pause = GameObject.Find("Pause").GetComponent<PauseMenu>();
         pause.enabled = false;
         health = startHealth;
@@ -819,13 +820,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
         if (other.gameObject.name == ("BoatTrigger"))
         {
-            
+
             canDrive = true;
         }
 
         Pearl pearl = other.GetComponent<Pearl>();
+        PowerUp power = other.GetComponent<PowerUp>();
 
-        if(pearl != null)
+        if (pearl != null || power != null)
         {
             wadeSound.PlayPearlPickup();
         }

@@ -125,7 +125,10 @@ public partial class WadeMachine : MonoBehaviour
         camFollow.rotation = transform.rotation;
     }
 
-
+    public void ChangeWeapon(int bulletNum)
+    {
+        bullet = bullets[bulletNum];
+    }
 
     public Vector3 LocalMovement()
     {
