@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Wade
+  m_Mask: 00000000010000000100000000000000000000000100000001000000010000000100000000000000000000000000000000000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: Armature
+    m_Weight: 1
+  - m_Path: Armature/hip
+    m_Weight: 1
+  - m_Path: Armature/hip/uleg.l
+    m_Weight: 1
+  - m_Path: Armature/hip/uleg.l/lleg.l
+    m_Weight: 1
+  - m_Path: Armature/hip/uleg.l/lleg.l/foot.l
+    m_Weight: 1
+  - m_Path: Armature/hip/uleg.r
+    m_Weight: 1
+  - m_Path: Armature/hip/uleg.r/lleg.r
+    m_Weight: 1
+  - m_Path: Armature/hip/uleg.r/lleg.r/foot.r
+    m_Weight: 1
+  - m_Path: Armature/iklegpole.l
+    m_Weight: 1
+  - m_Path: Armature/iklegpole.r
+    m_Weight: 1
+  - m_Path: Armature/iklegtarget.l
+    m_Weight: 1
+  - m_Path: Armature/iklegtarget.r
+    m_Weight: 1
+  - m_Path: Armature/torso
+    m_Weight: 1
+  - m_Path: Armature/torso/chest
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/neck
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/neck/head
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.l
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.l/uarm.l
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.l/uarm.l/larm.l
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.l/uarm.l/larm.l/hand.l
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.r
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.r/uarm.r
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.r/uarm.r/larm.r
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.r/uarm.r/larm.r/hand.r
+    m_Weight: 1
+  - m_Path: Armature/torso/chest/shoulder.r/uarm.r/larm.r/hand.r/Bone
+    m_Weight: 1
+  - m_Path: Cube.002
+    m_Weight: 1
+  - m_Path: Cube.002_Cube.005
+    m_Weight: 1

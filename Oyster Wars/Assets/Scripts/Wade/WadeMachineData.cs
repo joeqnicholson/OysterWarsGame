@@ -34,6 +34,15 @@ public partial class WadeMachine : MonoBehaviour
         JumpHeight = 4.5f,
         timeToJumpApex = .463f,
     };
+    
+    
+    private JumpProfile dashLongJump = new JumpProfile
+    {
+        Animation = "DashLongJump",
+        CanControlHeight = true,
+        JumpHeight = 4.5f,
+        timeToJumpApex = .463f,
+    };
 
     
 
@@ -338,10 +347,20 @@ public partial class WadeMachine : MonoBehaviour
     {
         if (Input.GetAxisRaw("LeftTrigger") != 0)
         {
-            aiming = true;
+            if (CurrentWadeState == WadeState.Idle || CurrentWadeState == WadeState.Walk)
+            {
+                PlayerAnimator.SetBool("Aim", true);
+                aiming = true;
+            }
+            else
+            {
+                PlayerAnimator.SetBool("Aim", false);
+                aiming = false;
+            }
         }
         if (Input.GetAxisRaw("LeftTrigger") == 0)
         {
+            PlayerAnimator.SetBool("Aim", false);
             aiming = false;
         }
     }
