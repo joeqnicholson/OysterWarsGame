@@ -182,7 +182,7 @@ public class Bozu : Enemy, ICharacterController
 
                     if (stateTimer > idleWaitTime && WadeDistance() < startShootingDistance)
                     {
-                        int randomStateChange = RandomInt(1, 4);
+                        int randomStateChange = RandomInt(1, 5);
                         switch (randomStateChange)
                         {
                             case 1:
@@ -205,11 +205,16 @@ public class Bozu : Enemy, ICharacterController
                                 }
                             case 3:
                                 {
-                                    jumpForwards = true;
+                                    jumpForwards = false;
                                     TransitionToState(BozuState.Jump);
                                     break;
                                 }
                             case 4:
+                                {
+                                    TransitionToState(BozuState.Run);
+                                    break;
+                                }
+                            case 5:
                                 {
                                     TransitionToState(BozuState.Run);
                                     break;
@@ -364,7 +369,7 @@ public class Bozu : Enemy, ICharacterController
                 }
             case BozuState.Run:
                 {
-                  currentRotation = Quaternion.Slerp(currentRotation, WadeLookRotation("flat"), (turnSpeed/2) * Time.deltaTime);
+                  currentRotation = Quaternion.Slerp(currentRotation, Quaternion.Euler( 0 , WadeLookRotation("flat").eulerAngles.y + Random.Range(0, 6), 0), (turnSpeed/2) * Time.deltaTime);
                   break;
                 }
         }

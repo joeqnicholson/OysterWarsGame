@@ -198,7 +198,7 @@ public class ATVBozu : Enemy, ICharacterController
             case ATVBozuState.Idle:
                 {
                     stateTimer += Time.deltaTime;
-                    if(WadeDistance() < 100)
+                    if(WadeDistance() < 120)
                     {
                         if (stateTimer > idleWaitTime && WadeDistance() > startChargingDistance)
                         {

@@ -451,13 +451,14 @@ MonoBehaviour:
   added: 0
   enemyPosition: {x: 0, y: 0, z: 0}
   wade: {fileID: 0}
-  grenade: {fileID: 9125040073943332622, guid: c260f2ba8cb9bc042a09248a995054a5, type: 3}
+  grenade: {fileID: 9125040073943332622, guid: cf8b9f7fb7624ab44bf51f110e43682a, type: 3}
   bullet: {fileID: 5216576217883653464, guid: b342e3cb41d3b7a469e97633a7c37bb0, type: 3}
   firePoint: {fileID: 1595059380}
   wadeCloseBy: 5
   wadeMachine: {fileID: 0}
   groundDetection: {fileID: 1558631370}
   groundDetectionFar: {fileID: 394811742}
+  hitPower: 0
   groundFar: 0
   groundFront: 0
   jumpHeight: 6.5
