@@ -19,7 +19,7 @@ MonoBehaviour:
     m_Value: -0.06
   contrast:
     m_OverrideState: 1
-    m_Value: 34.4
+    m_Value: -4.3
     min: -100
     max: 100
   colorFilter:
@@ -35,7 +35,7 @@ MonoBehaviour:
     max: 180
   saturation:
     m_OverrideState: 1
-    m_Value: -16
+    m_Value: -27.3
     min: -100
     max: 100
 --- !u!114 &-4600755671364906184
@@ -50,11 +50,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
   m_Name: Bloom
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   threshold:
     m_OverrideState: 1
-    m_Value: 0.27
+    m_Value: 0.33
     min: 0
   intensity:
     m_OverrideState: 1
@@ -97,7 +97,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdfbdbb87d3286943a057f7791b43141, type: 3}
   m_Name: ChannelMixer
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   m_AdvancedMode: 0
   redOutRedIn:
     m_OverrideState: 0
@@ -179,13 +179,13 @@ MonoBehaviour:
   m_AdvancedMode: 0
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 0.9826893, y: 0.9870173, z: 1, w: -0.46866485}
+    m_Value: {x: 0.885466, y: 0.86067027, z: 1, w: -0.18040131}
   midtones:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.93419474, z: 0.87065023, w: -0.03814714}
+    m_Value: {x: 0.96811944, y: 0.9999509, z: 1, w: 0.20796147}
   highlights:
-    m_OverrideState: 1
-    m_Value: {x: 1, y: 1, z: 1, w: 0.010899182}
+    m_OverrideState: 0
+    m_Value: {x: 0.8648249, y: 0.8177417, z: 1, w: 0.3128896}
   shadowsStart:
     m_OverrideState: 0
     m_Value: 0
@@ -236,8 +236,8 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
-          time: 0.41613925
-          value: 0.53770494
+          time: 0.5197629
+          value: 0.44855964
           inSlope: 0.8968613
           outSlope: 0.8968613
           tangentMode: 0

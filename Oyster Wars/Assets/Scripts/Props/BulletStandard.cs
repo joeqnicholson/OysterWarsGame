@@ -30,10 +30,11 @@ public class BulletStandard : MonoBehaviour
     {
         Enemy enemy = other.gameObject.GetComponent<Enemy>();
         WadeMachine wade = other.gameObject.GetComponent<WadeMachine>();
-
+        WadeBoatController boat = other.gameObject.GetComponent<WadeBoatController>();
         BulletStandard bullet = other.gameObject.GetComponent<BulletStandard>();
 
-        if (wade != null)
+
+        if (wade)
         {
             if (!wadesBullet)
             {
@@ -43,18 +44,24 @@ public class BulletStandard : MonoBehaviour
             }
         }
 
-        if (enemy != null)
+        if (enemy)
         {
-            enemy.DoTakeDamage(damage);
-            Instantiate(explosionEffect, transform.position, transform.rotation);
-            Destroy(gameObject);
+            if (wadesBullet)
+            {
+                enemy.DoTakeDamage(damage);
+                Instantiate(explosionEffect, transform.position, transform.rotation);
+                Destroy(gameObject);
+            }
         }
 
 
-        if(wade == null)
+        if(!wade && !bullet && !boat)
         {
-            Instantiate(explosionEffect, transform.position, transform.rotation);
-            Destroy(gameObject);
+            if(other.gameObject.name != "BoatTrigger" && other.gameObject.name != "Mover")
+            {
+                Instantiate(explosionEffect, transform.position, transform.rotation);
+                Destroy(gameObject);
+            }
         }   
     }
 }

@@ -101,8 +101,35 @@ public partial class WadeMachine : MonoBehaviour
     {
         healthBar.fillAmount = (health / startHealth);
     }
+    private void DoUpdateVariables()
+    {
+        if (takeBoatVelocity)
+        {
+            boatRelativeJumpMove = boat.GetComponent<WadeBoatController>().Motor.Velocity;
+        }
+        else
+        {
+            boatRelativeJumpMove = Vector3.zero;
+        }
 
-    private void FollowBlock()
+        if (spawnInBoat)
+        {
+            lastStablePosition = boat.transform.position;
+        }
+
+        pearlsCount.text = pearls.ToString();
+
+        cubeTarget = camObject.GetComponent<WadeCamera>().lockOnInstance.transform;
+
+        blendAngle = Vector3.Angle(transform.forward, LocalMovement()) * input.Current.MoveInput.x;
+
+        angle = Vector3.Angle(transform.forward, LocalMovement());
+
+        stateString = CurrentWadeState.ToString();
+
+        wadeVelocity = Motor.Velocity;
+    }
+    private void DoFollowBlock()
     {
         float jumpPosY;
 
@@ -125,7 +152,10 @@ public partial class WadeMachine : MonoBehaviour
         camFollow.rotation = transform.rotation;
     }
 
-
+    public void ChangeWeapon(int bulletNum)
+    {
+        bullet = bullets[bulletNum];
+    }
 
     public Vector3 LocalMovement()
     {
@@ -148,43 +178,59 @@ public partial class WadeMachine : MonoBehaviour
     }
 
 
-    private float lockOnAngles()
-    {
-
-
-        camF = cam.forward;
-        camR = cam.right;
-
-        camF.y = 0;
-        camR.y = 0;
-
-        camF = camF.normalized;
-        camR = camR.normalized;
-
-
-        return Vector3.SignedAngle(gun.forward, Motor.CharacterForward, camF);
-
-    }
-
     public void DoTakeDamage(float damage)
     {
         if (CurrentWadeState != WadeState.Hit && CurrentWadeState != WadeState.Death)
         {
-            health -= damage;
-
-            if (health > 0)
+            if (!invincible)
             {
-                TransitionToState(WadeState.Hit);
+                health -= damage;
+
+                if (health > 0)
+                {
+                    TransitionToState(WadeState.Hit);
+                }
+                else
+                {
+                    TransitionToState(WadeState.Death);
+                }
+            }
+        }       
+    }
+
+
+    public void DoInvincibility()
+    {
+        if (invincibilityTimer > invincibilityTime)
+        {
+            invincible = false;
+        }
+        else
+        {
+            invincible = true;
+        }
+
+        if (invincible)
+        {
+
+            if (flashTimer >= flashTime)
+            {
+                PlayerSkinnedMesh.GetComponent<SkinnedMeshRenderer>().enabled = true;
             }
             else
             {
-                TransitionToState(WadeState.Death);
+                PlayerSkinnedMesh.GetComponent<SkinnedMeshRenderer>().enabled = false;
             }
 
+            if (flashTimer >= flashTime * 2)
+            {
+                flashTimer = 0;
+            }
         }
-
-       
-        
+        else
+        {
+            PlayerSkinnedMesh.GetComponent<SkinnedMeshRenderer>().enabled = true;
+        }
     }
 
     void ShootControls()
@@ -210,7 +256,7 @@ public partial class WadeMachine : MonoBehaviour
         
     }
 
-    void Shooting()
+    void DoShooting()
     {
         shotTimer += Time.deltaTime;
 
