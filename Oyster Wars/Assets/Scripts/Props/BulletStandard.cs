@@ -32,36 +32,40 @@ public class BulletStandard : MonoBehaviour
         WadeMachine wade = other.gameObject.GetComponent<WadeMachine>();
         WadeBoatController boat = other.gameObject.GetComponent<WadeBoatController>();
         BulletStandard bullet = other.gameObject.GetComponent<BulletStandard>();
-
-
-        if (wade)
+        Slash slash = other.gameObject.GetComponent<Slash>();
+        AudioTrigger mt = other.gameObject.GetComponent<AudioTrigger>();
+        if (!slash)
         {
-            if (!wadesBullet)
+            if (wade)
             {
-                wade.DoTakeDamage(damage);
-                Instantiate(explosionEffect, transform.position, transform.rotation);
-                Destroy(gameObject);
+                if (!wadesBullet)
+                {
+                    wade.DoTakeDamage(damage);
+                    Instantiate(explosionEffect, transform.position, transform.rotation);
+                    Destroy(gameObject);
+                }
+            }
+
+            if (enemy)
+            {
+                if (wadesBullet)
+                {
+                    enemy.DoTakeDamage(damage);
+                    Instantiate(explosionEffect, transform.position, transform.rotation);
+                    Destroy(gameObject);
+                }
+            }
+
+
+            if (!wade && !bullet && !boat && !mt)
+            {
+                if (other.gameObject.name != "BoatTrigger" && other.gameObject.name != "Mover")
+                {
+                    Instantiate(explosionEffect, transform.position, transform.rotation);
+                    Destroy(gameObject);
+                }
             }
         }
-
-        if (enemy)
-        {
-            if (wadesBullet)
-            {
-                enemy.DoTakeDamage(damage);
-                Instantiate(explosionEffect, transform.position, transform.rotation);
-                Destroy(gameObject);
-            }
-        }
-
-
-        if(!wade && !bullet && !boat)
-        {
-            if(other.gameObject.name != "BoatTrigger" && other.gameObject.name != "Mover")
-            {
-                Instantiate(explosionEffect, transform.position, transform.rotation);
-                Destroy(gameObject);
-            }
-        }   
+        
     }
 }

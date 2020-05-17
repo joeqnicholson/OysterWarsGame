@@ -16,7 +16,7 @@ public class PauseMenu : MonoBehaviour
     void Start()
     {
         pauseCanvas = GetComponent<Canvas>();
-        pauseCanvas.enabled = false;
+        pauseCanvas.enabled = true;
         paused = false;
     }
 
@@ -34,8 +34,12 @@ public class PauseMenu : MonoBehaviour
                 ResumeGame();
             }
         }
-        float skullPosition = events.currentSelectedGameObject.GetComponent<RectTransform>().anchoredPosition.y;
-        skullTransform.anchoredPosition = new Vector2(skullTransform.anchoredPosition.x, skullPosition);
+        if (pauseCanvas.enabled)
+        {
+            float skullPosition = events.currentSelectedGameObject.GetComponent<RectTransform>().anchoredPosition.y;
+            skullTransform.anchoredPosition = new Vector2(skullTransform.anchoredPosition.x, skullPosition);
+        }
+
     }
 
 

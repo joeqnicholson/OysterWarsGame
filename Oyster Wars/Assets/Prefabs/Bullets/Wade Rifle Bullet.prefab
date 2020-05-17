@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 8420889125105534160}
   - component: {fileID: -1045294249751721487}
   - component: {fileID: 4764018048178146571}
+  - component: {fileID: 1417502533798254852}
   m_Layer: 0
   m_Name: Wade Rifle Bullet
   m_TagString: Untagged
@@ -131,3 +132,16 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1417502533798254852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5216576217883653464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  time: 0.8

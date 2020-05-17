@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using KinematicCharacterController;
 using System;
-using UnityEditorInternal;
+
 
 public enum BozuState
 {
@@ -26,6 +26,9 @@ public class Bozu : Enemy, ICharacterController
     public float Gravity;
     public float idleWaitTime;
     public float endRunTime;
+    public float footTimer;
+    public float footFreq;
+
 
     public float shootTime;
     public float shootFrequency;
@@ -306,6 +309,13 @@ public class Bozu : Enemy, ICharacterController
             case BozuState.Run:
                 {
                     stateTimer += Time.deltaTime;
+                    footTimer += Time.deltaTime;
+
+                    if (footTimer > footFreq)
+                    {
+                        enemysound.PlayFootSteps();
+                        footTimer = 0;
+                    }
 
 
                     if (!DetectForwardGround())
@@ -414,6 +424,7 @@ public class Bozu : Enemy, ICharacterController
                 }
             case BozuState.Run:
                 {
+                    
                     moveSpeed = Mathf.Lerp(moveSpeed, speed, acceleration * Time.deltaTime);
 
                     if (!Motor.GroundingStatus.FoundAnyGround)
@@ -462,7 +473,10 @@ public class Bozu : Enemy, ICharacterController
 
     public void OnTriggerEnter(Collider other)
     {
-
+        if(other.gameObject.layer == 4)
+        {
+            DoTakeDamage(2000);
+        }
     }
 
     public void OnTriggerExit(Collider other)

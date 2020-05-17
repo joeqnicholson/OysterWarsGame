@@ -4,11 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using KinematicCharacterController;
 using System;
-using UnityEditorInternal;
-
+using UnityEditor;
 public enum ATVBozuState
 {
-    Idle, Charge, Fall, Shooting, Jump, Sweep, TailWhip, Circle, CurveApproach
+    Idle, Charge, Fall, Shooting, Jump, Sweep, TailWhip, Circle, CurveApproach, TailWhipCoolDown
 }
 
 public class ATVBozu : Enemy, ICharacterController
@@ -45,14 +44,17 @@ public class ATVBozu : Enemy, ICharacterController
     public float curveApproachDivision;
     public float activeDrift;
     public float driftIncrease;
+    public bool hasCharged;
 
     public GameObject characterMesh;
     public Animator animator;
 
     public KinematicCharacterMotor Motor;
+    public AudioSource motor;
     public ATVBozuState CurrentATVBozuState { get; private set; }
     private void Start()
     {
+        hasCharged = false;
         cam = GameObject.Find("Camera").GetComponent<Camera>();
         wadeCamera = GameObject.Find("Camera").GetComponent<WadeCamera>();
         wadeMachine = GameObject.Find("Wade").GetComponent<WadeMachine>();
@@ -60,6 +62,7 @@ public class ATVBozu : Enemy, ICharacterController
         turnSpeed = bozuTurnSpeed;
         TransitionToState(ATVBozuState.Idle);
         health = startHealth;
+        motor = GetComponent<AudioSource>();
     }
 
 
@@ -121,19 +124,39 @@ public class ATVBozu : Enemy, ICharacterController
                 }
             case ATVBozuState.Charge:
                 {
-                    //animator.SetBool("Charge", true);
+                    animator.SetBool("Charge", true);
+
+                    break;
+                }
+            case ATVBozuState.CurveApproach:
+                {
+                    animator.SetBool("Turn", true);
+
+                    break;
+                }
+            case ATVBozuState.Circle:
+                {
+                    animator.SetBool("Turn", true);
 
                     break;
                 }
             case ATVBozuState.TailWhip:
                 {
+                    animator.SetBool("Whip", true);
                     activeDrift = 0;
                     tailWhipActiveWidth = curveApproachAngle;
 
                     break;
                 }
+            case ATVBozuState.TailWhipCoolDown:
+                {
+                    activeDrift = 0;
+                    tailWhipActiveWidth = transform.rotation.eulerAngles.y;
+                    break;
+                } 
             case ATVBozuState.Fall:
                 {
+                    verticalMoveSpeed = 8;
                     stateTimer = 0;
                     break;
                 }
@@ -168,7 +191,32 @@ public class ATVBozu : Enemy, ICharacterController
                 }
             case ATVBozuState.Charge:
                 {
-                    //animator.SetBool("Charge", false);
+                    animator.SetBool("Charge", false);
+                    break;
+                }
+            case ATVBozuState.CurveApproach:
+                {
+                    animator.SetBool("Turn", false);
+
+                    break;
+                }
+            case ATVBozuState.Circle:
+                {
+                    animator.SetBool("Turn", false);
+
+                    break;
+                }
+            case ATVBozuState.TailWhip:
+                {
+                    activeDrift = 0;
+                    tailWhipActiveWidth = curveApproachAngle;
+                    break;
+                }
+            case ATVBozuState.TailWhipCoolDown:
+                {
+                    animator.SetBool("Whip", false);
+                    
+                    tailWhipActiveWidth = curveApproachAngle;
                     break;
                 }
             case ATVBozuState.Fall:
@@ -181,6 +229,13 @@ public class ATVBozu : Enemy, ICharacterController
 
     public void Update()
     {
+        if (WadeDistance() < 150)
+        {
+            motor.volume = moveSpeed / speed - .4f;
+            motor.pitch = moveSpeed / speed + .5f;
+        }
+        
+
         curveApproachAngle = WadeDistance() / curveApproachDivision;
         stateString = CurrentATVBozuState.ToString();
         timeSinceLastJump += Time.deltaTime;
@@ -197,10 +252,16 @@ public class ATVBozu : Enemy, ICharacterController
         {
             case ATVBozuState.Idle:
                 {
-                    stateTimer += Time.deltaTime;
-                    if(WadeDistance() < 120)
+                    
+                    
+                    if(WadeDistance() < 150)
                     {
-                        if (stateTimer > idleWaitTime && WadeDistance() > startChargingDistance)
+                        if (!hasCharged)
+                        {
+                            hasCharged = true;
+                            TransitionToState(ATVBozuState.Charge);
+                        }
+                        else if (stateTimer > idleWaitTime && WadeDistance() > startChargingDistance)
                         {
                             int randomStateChange = RandomInt(1, 2);
                             switch (randomStateChange)
@@ -222,8 +283,6 @@ public class ATVBozu : Enemy, ICharacterController
                             TransitionToState(ATVBozuState.Charge);
                         }
                     }
-                    
-
                     break;
                 }
             case ATVBozuState.Shooting:
@@ -250,6 +309,10 @@ public class ATVBozu : Enemy, ICharacterController
 
             case ATVBozuState.Charge:
                 {
+                    if (DetectForwardWall())
+                    {
+                        TransitionToState(ATVBozuState.Idle);
+                    }
 
                     if (dropTimer > dropFrequency && WadeDistance() < startChargingDistance - 8)
                     {
@@ -267,10 +330,10 @@ public class ATVBozu : Enemy, ICharacterController
 
 
 
-                    if (!DetectForwardGround())
-                    {
-                        TransitionToState(ATVBozuState.Idle);
-                    }
+                    //if (!DetectForwardGround())
+                    //{
+                    //    TransitionToState(ATVBozuState.Idle);
+                    //}
 
                     if(stateTimer > runLength)
                     {
@@ -301,6 +364,14 @@ public class ATVBozu : Enemy, ICharacterController
                 {
                     if (stateTimer > tailWhipTime)
                     {
+                        TransitionToState(ATVBozuState.TailWhipCoolDown);
+                    }
+                    break;
+                }
+            case ATVBozuState.TailWhipCoolDown:
+                {
+                    if (stateTimer > tailWhipTime + 2)
+                    {
                         TransitionToState(ATVBozuState.Idle);
                     }
                     break;
@@ -309,8 +380,13 @@ public class ATVBozu : Enemy, ICharacterController
                 {
                     if(dropTimer > dropFrequency * 10)
                     {
+                        animator.SetBool("Toss", true);
                         GrenadeThrow();
                         dropTimer = 0;
+                    }
+                    else
+                    {
+                        animator.SetBool("Toss", false);
                     }
 
                     
@@ -371,6 +447,18 @@ public class ATVBozu : Enemy, ICharacterController
 
                     break;
                 }
+            case ATVBozuState.TailWhipCoolDown:
+                {
+
+                    tailWhipActiveWidth -= tailWhipSpeed * deltaTime;
+
+
+                    Quaternion wadeRight = Quaternion.Euler(WadeLookRotation("flat").eulerAngles.x, tailWhipActiveWidth, WadeLookRotation("flat").eulerAngles.z);
+
+                    currentRotation = Quaternion.Slerp(currentRotation, wadeRight, turnSpeed * Time.deltaTime);
+
+                    break;
+                }
             case ATVBozuState.Charge:
                 {
 
@@ -402,12 +490,18 @@ public class ATVBozu : Enemy, ICharacterController
                 {
                     moveSpeed = Mathf.Lerp(moveSpeed, speed, acceleration * Time.deltaTime);
 
+
                     if (!Motor.GroundingStatus.FoundAnyGround)
                     {
-                        TransitionToState(ATVBozuState.Fall);
+                        verticalMoveSpeed += Gravity * Time.deltaTime;
+
+                    }
+                    else
+                    {
+                        verticalMoveSpeed = 0;
                     }
 
-                    currentVelocity = Motor.CharacterForward * moveSpeed;
+                    currentVelocity = Motor.CharacterForward * moveSpeed + Vector3.up * verticalMoveSpeed;
 
                     break;
                 }
@@ -427,6 +521,27 @@ public class ATVBozu : Enemy, ICharacterController
                     }
 
                     
+
+                    currentVelocity = Motor.CharacterForward * tailWhipMoveSpeed + Motor.CharacterRight * activeDrift;
+
+                    break;
+                }
+            case ATVBozuState.TailWhipCoolDown:
+                {
+
+                    activeDrift = Mathf.Lerp(activeDrift, driftFactor, driftIncrease * Time.deltaTime);
+
+
+
+
+                    moveSpeed = Mathf.Lerp(moveSpeed, speed, acceleration * Time.deltaTime);
+
+                    if (!Motor.GroundingStatus.FoundAnyGround)
+                    {
+                        TransitionToState(ATVBozuState.Fall);
+                    }
+
+
 
                     currentVelocity = Motor.CharacterForward * tailWhipMoveSpeed + Motor.CharacterRight * activeDrift;
 

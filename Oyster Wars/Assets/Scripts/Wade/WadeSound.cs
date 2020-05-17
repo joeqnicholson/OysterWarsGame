@@ -9,6 +9,10 @@ public partial class WadeSound : MonoBehaviour
     public AudioClip pearlPickup;
     public AudioClip rifleShot;
     public AudioClip footStep;
+    public AudioClip swoosh;
+    public AudioClip jump;
+    public AudioClip hit;
+
 
     private void Start()
     {
@@ -20,6 +24,11 @@ public partial class WadeSound : MonoBehaviour
         SoundSource.PlayOneShot(pearlPickup, 0.5f);
     }
 
+    public void PlaySwoosh()
+    {
+        SoundSource.PlayOneShot(swoosh, 0.4f);
+    }
+
     public void PlayRifleShot()
     {
         SoundSource.PlayOneShot(rifleShot, 0.2f);
@@ -27,6 +36,15 @@ public partial class WadeSound : MonoBehaviour
 
     public void PlayFootSteps()
     {
-        SoundSource.PlayOneShot(footStep, 0.5f);
+        SoundSource.PlayOneShot(footStep, 0.2f);
+    }
+
+    public void PlayJump()
+    {
+        SoundSource.PlayOneShot(jump, 0.2f);
+    }
+    public void PlayHit()
+    {
+        SoundSource.PlayOneShot(hit, 0.2f);
     }
 }

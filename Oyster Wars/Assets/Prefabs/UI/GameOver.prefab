@@ -712,7 +712,7 @@ MonoBehaviour:
   canvasGroup: {fileID: 1087652365898617484}
   retry: {fileID: 1087652365452603808}
   mainMenu: {fileID: 1087652365632542742}
-  fadeInTimer: 0.5
+  fadeInTimer: 0.2
   events: {fileID: 7786085886543483650}
   skullTransform: {fileID: 2305857187251507235}
 --- !u!82 &2422736337336689527

@@ -144,7 +144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3
 --- !u!1 &4461236840563377538
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,7 +289,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3
 --- !u!1 &4502410673767554732
 GameObject:
   m_ObjectHideFlags: 0
@@ -434,7 +434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3
 --- !u!1 &4781020912378024749
 GameObject:
   m_ObjectHideFlags: 0
@@ -579,7 +579,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3
 --- !u!1 &5192927740850719829
 GameObject:
   m_ObjectHideFlags: 0
@@ -724,7 +724,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3
 --- !u!1 &5394194983152887665
 GameObject:
   m_ObjectHideFlags: 0
@@ -869,7 +869,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3
 --- !u!1 &5668629452719038267
 GameObject:
   m_ObjectHideFlags: 0
@@ -1053,7 +1053,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3
 --- !u!1 &6535722508799691833
 GameObject:
   m_ObjectHideFlags: 0
@@ -1198,7 +1198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3
 --- !u!1 &7187945824734850417
 GameObject:
   m_ObjectHideFlags: 0
@@ -1343,4 +1343,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49c716d6a20cad74dac05be84be7e417, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.7
+  time: 0.3

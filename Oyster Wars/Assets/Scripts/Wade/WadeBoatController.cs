@@ -31,6 +31,7 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
     public float leanSpeed;
     public float boatZrotation;
     public float boatXrotation;
+    public AudioSource motor;
     public Vector3 currentVelocity;
     public WadeBoatState CurrentWadeBoatState { get; private set; }
 
@@ -41,6 +42,7 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
     {
         TransitionToState(WadeBoatState.Idle);
         Motor.CharacterController = this;
+        motor = GetComponent<AudioSource>();
         
     }
 
@@ -87,14 +89,19 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
         currentVelocity = Motor.Velocity;
         stateString = CurrentWadeBoatState.ToString();
 
+        
 
         if (controlled)
         {
             accelerationInput = Input.GetAxisRaw("RightTrigger");
             turnInput = Input.GetAxisRaw("Horizontal");
+            motor.volume = (moveSpeed / engineSpeed + .1f) / 2;
+            motor.pitch = ((moveSpeed / engineSpeed) + .5f) / 2;
         }
         else
         {
+            motor.volume = Mathf.Lerp(motor.volume, 0, 2 *Time.deltaTime);
+            motor.pitch = Mathf.Lerp(motor.pitch, .5f, 2 * Time.deltaTime);
             turnInput = 0;
             accelerationInput = 0;
         }

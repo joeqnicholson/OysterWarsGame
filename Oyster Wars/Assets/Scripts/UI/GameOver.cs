@@ -14,28 +14,53 @@ public class GameOver : MonoBehaviour
     public float fadeInTimer;
     public EventSystem events;
     public RectTransform skullTransform;
-
+    public bool isPause;
+    
     void Start()
     {
-        canvasGroup.alpha = 0;
-        retry.enabled = false;
-        mainMenu.enabled = false;
+        if (isPause)
+        {
+            Time.timeScale = 0;
+            canvasGroup.alpha = 1;
+            retry.enabled = true;
+            mainMenu.enabled = true;
+        }
+        else
+        {
+            canvasGroup.alpha = 0;
+            retry.enabled = false;
+            mainMenu.enabled = false;
+        }
+
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        canvasGroup.alpha += fadeInTimer * Time.deltaTime;
+        GameObject music = GameObject.Find("MusicTrigger");
+        
 
-
-        if(canvasGroup.alpha == 1)
+        if (!isPause)
         {
-            retry.enabled = true;
-            mainMenu.enabled = true;
+            canvasGroup.alpha += fadeInTimer * Time.deltaTime;
+            Destroy(music);
+
+            if (canvasGroup.alpha > .5f)
+            {
+                retry.enabled = true;
+                mainMenu.enabled = true;
+                float skullPosition = events.currentSelectedGameObject.GetComponent<RectTransform>().anchoredPosition.y;
+                skullTransform.anchoredPosition = new Vector2(skullTransform.anchoredPosition.x, skullPosition);
+            }
+        }
+        else
+        {
             float skullPosition = events.currentSelectedGameObject.GetComponent<RectTransform>().anchoredPosition.y;
             skullTransform.anchoredPosition = new Vector2(skullTransform.anchoredPosition.x, skullPosition);
         }
         
+
     }
 
     public void ReloadLevel()
@@ -46,5 +71,25 @@ public class GameOver : MonoBehaviour
     public void MainMenu()
     {
         SceneManager.LoadScene(0);
+    }
+    
+    public void MainMenuPause()
+    {
+        SceneManager.LoadScene(0);
+    }
+    public void Continue()
+    {
+        Time.timeScale = 1;
+        WadeMachine wade = GameObject.Find("Wade").GetComponent<WadeMachine>();
+        wade.inPause = false;
+        Destroy(gameObject);  
+    }
+    public void RestartPause()
+    {
+        Time.timeScale = 1;
+        WadeMachine wade = GameObject.Find("Wade").GetComponent<WadeMachine>();
+        wade.inPause = false;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        Destroy(gameObject);
     }
 }
