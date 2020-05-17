@@ -117,6 +117,9 @@ ModelImporter:
   - first:
       74: 5402121074366467735
     second: Armature|wall_slide
+  - first:
+      74: 3253136722697599221
+    second: Armature|hit air down to kip up (1)
   externalObjects: {}
   materials:
     materialImportMode: 1
@@ -132,173 +135,7 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Armature|air_slash' has import animation warnings
-      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
-      to improve retargeting quality.\n\t'torso' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\nClip 'Armature|dash'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'hip' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'uleg.l' has
-      translation animation that will be discarded.\n\t'uleg.r' has translation animation
-      that will be discarded.\n\t'torso' has translation animation that will be discarded.\n\t'torso'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
-      'Armature|dash jump one foot' has import animation warnings that might lower
-      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
-      quality.\n\t'hip' has translation animation that will be discarded.\n\t'hip'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'uleg.l'
-      has translation animation that will be discarded.\n\t'uleg.r' has translation
-      animation that will be discarded.\n\t'torso' has translation animation that
-      will be discarded.\n\t'torso' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\nClip 'Armature|dash jump two foot' has
-      import animation warnings that might lower retargeting quality:\nNote: Activate
-      translation DOF on avatar to improve retargeting quality.\n\t'hip' has translation
-      animation that will be discarded.\n\t'hip' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\t'torso'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
-      'Armature|death' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'hip' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'torso' has
-      translation animation that will be discarded.\n\t'torso' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'Armature|death
-      drown' has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'torso' has translation
-      animation that will be discarded.\n\nClip 'Armature|double_jump' has import
-      animation warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'hip' has translation animation
-      that will be discarded.\n\t'hip' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\t'torso' has translation animation that
-      will be discarded.\n\t'torso' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\nClip 'Armature|edge grab' has import animation
-      warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'hip' has translation animation
-      that will be discarded.\n\t'hip' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\t'torso' has translation animation that
-      will be discarded.\n\t'torso' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\nClip 'Armature|front flip' has import
-      animation warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'hip' has translation animation
-      that will be discarded.\n\t'hip' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\t'torso' has translation animation that
-      will be discarded.\n\t'torso' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\nClip 'Armature|ground slash' has import
-      animation warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'torso' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'Armature|hit'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'torso' has translation
-      animation that will be discarded.\n\t'torso' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\nClip 'Armature|hit air'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'torso'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
-      'Armature|hit air down to kip up' has import animation warnings that might
-      lower retargeting quality:\nNote: Activate translation DOF on avatar to improve
-      retargeting quality.\n\t'hip' has translation animation that will be discarded.\n\t'hip'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\t'torso'
-      has translation animation that will be discarded.\n\t'torso' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'Armature|idle
-      aim' has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'torso' has translation
-      animation that will be discarded.\n\t'torso' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\nClip 'Armature|idle_good'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
-      'Armature|jump and fall' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'torso' has translation
-      animation that will be discarded.\n\t'torso' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\nClip 'Armature|long_jump_good'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'hip' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'torso' has
-      translation animation that will be discarded.\n\t'torso' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'Armature|run'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\t'torso'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
-      'Armature|run slide' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'hip' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'uleg.l' has
-      translation animation that will be discarded.\n\t'uleg.r' has translation animation
-      that will be discarded.\n\t'torso' has translation animation that will be discarded.\n\t'torso'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
-      'Armature|run_090' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\nClip
-      'Armature|run_135' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\nClip
-      'Armature|run_180' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\t'torso'
-      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
-      'Armature|run_225' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\nClip
-      'Armature|run_270' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\nClip
-      'Armature|run_315' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\nClip
-      'Armature|run_overhead' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\nClip
-      'Armature|screw_attack' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'hip' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'torso' has
-      translation animation that will be discarded.\n\t'torso' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'Armature|spark
-      slam' has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'hip' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\t'torso' has
-      translation animation that will be discarded.\n\t'torso' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n\nClip 'Armature|walk'
-      has import animation warnings that might lower retargeting quality:\nNote:
-      Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'uleg.l' has translation
-      animation that will be discarded.\n\t'uleg.r' has translation animation that
-      will be discarded.\n\t'torso' has translation animation that will be discarded.\n\nClip
-      'Armature|walk idle' has import animation warnings that might lower retargeting
-      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'hip'
-      has translation animation that will be discarded.\n\t'torso' has translation
-      animation that will be discarded.\n\nClip 'Armature|wall_jump' has import animation
-      warnings that might lower retargeting quality:\nNote: Activate translation
-      DOF on avatar to improve retargeting quality.\n\t'hip' has translation animation
-      that will be discarded.\n\t'hip' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n\t'torso' has translation animation that
-      will be discarded.\n\t'torso' is inbetween humanoid transforms and has rotation
-      animation that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -693,7 +530,7 @@ ModelImporter:
       name: Armature|ground slash
       takeName: Armature|ground slash
       internalID: 0
-      firstFrame: 2.6
+      firstFrame: 0
       lastFrame: 23.1
       wrapMode: 0
       orientationOffsetY: 0
@@ -808,7 +645,7 @@ ModelImporter:
       takeName: Armature|hit air
       internalID: 0
       firstFrame: 0
-      lastFrame: 15
+      lastFrame: 3.2
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -836,7 +673,7 @@ ModelImporter:
       name: Armature|hit air down to kip up
       takeName: Armature|hit air down to kip up
       internalID: 0
-      firstFrame: 0
+      firstFrame: 5.1
       lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
@@ -1447,6 +1284,35 @@ ModelImporter:
       internalID: 0
       firstFrame: 0
       lastFrame: 24
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Armature|hit air down to kip up (1)
+      takeName: Armature|hit air down to kip up
+      internalID: 0
+      firstFrame: 7.5000005
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

@@ -5,6 +5,7 @@ using UnityEngine;
 public class PowerUp : MonoBehaviour
 {
     public int placeInList;
+    public bool isHealth;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -12,8 +13,17 @@ public class PowerUp : MonoBehaviour
 
         if(wade != null)
         {
-            wade.ChangeWeapon(placeInList);
-            Destroy(gameObject);
+            if (!isHealth)
+            {
+                wade.ChangeWeapon(placeInList);
+                Destroy(gameObject);
+            }
+            else
+            {
+                wade.health = wade.startHealth;
+                Destroy(gameObject);
+            }
+            
         }
 
         

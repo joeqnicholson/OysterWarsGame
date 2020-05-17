@@ -36,6 +36,8 @@ public class Enemy : MonoBehaviour
     public float hitPower;
     public bool groundFar;
     public bool groundFront;
+    public EnemySound enemysound;
+    public GameObject pearlBag;
 
 
     [Header("Jump")]
@@ -83,9 +85,11 @@ public class Enemy : MonoBehaviour
 
     public void DoTakeDamage(float damage)
     {
+        enemysound.PlayHit();
         health -= damage;
         if (health <= 0)
         {
+            Instantiate(pearlBag, transform.position, transform.rotation);
             wadeCamera.enemiesOnScreen.Remove(transform);
             Destroy(gameObject);
         }
@@ -138,6 +142,8 @@ public class Enemy : MonoBehaviour
 
     public void Shoot(string rotation)
     {
+        enemysound.PlayRifleShot();
+
         if(rotation == "flat")
         {
             GameObject tempBullet = Instantiate(bullet, firePoint.position, WadeLookRotation("flat")) as GameObject;
@@ -150,12 +156,19 @@ public class Enemy : MonoBehaviour
         {
             GameObject tempBullet = Instantiate(bullet, firePoint.position, firePoint.rotation) as GameObject;
         }
+        
     }
 
     public bool DetectForwardGround()
     {
         RaycastHit hit;
         return (Physics.Raycast(groundDetection.position, Vector3.down, out hit, 5));
+    }
+
+    public bool DetectForwardWall()
+    {
+        RaycastHit hit;
+        return (Physics.Raycast(groundDetection.position, Vector3.forward, out hit, 5));
     }
 
     public bool DetectForwardGroundFar()

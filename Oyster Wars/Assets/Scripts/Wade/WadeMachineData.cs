@@ -44,7 +44,16 @@ public partial class WadeMachine : MonoBehaviour
         timeToJumpApex = .463f,
     };
 
-    
+    private JumpProfile boatLong = new JumpProfile
+    {
+        Animation = "DashLongJump",
+        CanControlHeight = true,
+        JumpHeight = 4.5f,
+        timeToJumpApex = .463f,
+        InitialForwardVelocity = 17,
+    };
+
+
 
     private JumpProfile jumpWall = new JumpProfile
     {
@@ -189,12 +198,13 @@ public partial class WadeMachine : MonoBehaviour
 
     public void DoTakeDamage(float damage)
     {
+        
+
         if (CurrentWadeState != WadeState.Hit && CurrentWadeState != WadeState.Death)
         {
             if (!invincible)
             {
                 health -= damage;
-
                 if (health > 0)
                 {
                     TransitionToState(WadeState.Hit);
@@ -244,13 +254,26 @@ public partial class WadeMachine : MonoBehaviour
 
     void ShootControls()
     {
+        if (aimUp)
+        {
+            aimHeight = aimHeightDown;
+        }
+        else if(currentJumpProfile == frontFlip && CurrentWadeState == WadeState.Jump)
+        {
+            aimHeight = aimHeightUp;
+        }
+        else
+        {
+            aimHeight = 0;
+        }
+
         if (Input.GetAxisRaw("RightTrigger") != 0)
         {
             if (triggerInUse == false)
             {
                 if (canShoot)
                 {
-                    Instantiate(bullet, gun.position, gun.rotation);
+                    Instantiate(bullet, gun.position + Vector3.up * aimHeight, gun.rotation);
                     shotTimer = 0;
                     triggerInUse = true;
                     wadeSound.PlayRifleShot();
@@ -301,46 +324,20 @@ public partial class WadeMachine : MonoBehaviour
             canLockOn = true;
         }
 
-
-
-        //if (!lockedOn)
-        //{
-
             if (stateString == "Jump" && currentJumpProfile == frontFlip)
             {
-                gun.rotation = Quaternion.Euler(transform.localRotation.eulerAngles.x + gunTurnx, transform.localRotation.eulerAngles.y + gunTurny, transform.localRotation.eulerAngles.z + gunTurnx );
+                gun.rotation = Quaternion.Euler(transform.localRotation.eulerAngles.x + 45, transform.localRotation.eulerAngles.y, transform.localRotation.eulerAngles.z);
 
+            }
+            else if (aimUp)
+            {
+                gun.rotation = Quaternion.Euler(transform.eulerAngles.x - 35, transform.eulerAngles.y, transform.eulerAngles.z) ;
             }
             else
             {
                 gun.rotation = transform.rotation;
             }
-        //}
-        //else
-        //{
-        //    if (stateString == "Jump" && currentJumpProfile == frontFlip)
-        //    {
-        //        gun.rotation = Quaternion.Euler(transform.localRotation.eulerAngles.x + gunTurnx, transform.localRotation.eulerAngles.y + gunTurny, transform.localRotation.eulerAngles.z + gunTurnx);
 
-        //    }
-        //    else
-        //    {
-        //        Vector3 lockOnRotation = (cubeTarget.position - gun.position);
-        //        Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
-        //        Debug.DrawLine(gun.position, cubeTarget.position, Color.red);
-        //        gun.rotation = lookRotation;
-        //    }
-
-
-        //}
-
-        //if (input.Current.ShootInput && canShoot && shotTimer > 0.5f)
-        //{
-        //    GameObject clone;
-        //    clone = Instantiate(bullet, firePoint.position, gun.rotation);
-        //    Destroy(clone, 3f);
-        //    shotTimer = 0;
-        //}
     }
 
     void DoAiming()
