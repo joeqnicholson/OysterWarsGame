@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 using KinematicCharacterController;
 using UnityEngine.SceneManagement;
 using System;
@@ -17,6 +18,9 @@ public enum WadeState
 //[RequireComponent(typeof(WadeInputs))]  
 public partial class WadeMachine : MonoBehaviour, ICharacterController
 {
+
+    Controls controls;
+
     public float gunTurnz;
     public float gunTurny;
     public float gunTurnx;
@@ -192,9 +196,13 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public bool inPause;
     public string stateString;
     public float timeScale;
+    Vector2 move;
 
 
-
+    private void Awake()
+    {
+        controls = new Controls();
+    }
 
 
     private void Start()
@@ -554,6 +562,16 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         }
     }
 
+    void OnEnable()
+    {
+        controls.PlayerControls.Enable();
+    }
+
+    void OnDisable()
+    {
+        controls.PlayerControls.Disable();
+    }
+
     public void Update()
     {
 
@@ -578,16 +596,21 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         DoShooting();
         DoFollowBlock();
         DoUpdateVariables();
-
+        
         //Debug.DrawRay(transform.position, LocalMovement() + Vector3.up, Color.blue);
         verticalMoveSpeed = Mathf.Clamp(verticalMoveSpeed, minVM, maxVM);
         switch (CurrentWadeState)
         {
             case WadeState.Idle:
                 {
+
+                    
+
+                    
+
                     slashTimer += Time.deltaTime;
 
-                    if (Input.GetButtonDown("Slash"))
+                    if (input.Current.SlashInput)
                     {
                         wadeSound.PlaySwoosh();
                         aimUp = true;
@@ -595,10 +618,9 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         PlayerAnimator.SetBool("Slash", true);
                     }
 
-
-
-                    if (!Input.GetButton("Slash"))
+                    if (!controls.PlayerControls.CircleHold.triggered)
                     {
+                        print("WOOHOO");
                         if (slashTimer > slashTime)
                         {
                             aimUp = false;
@@ -617,7 +639,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
 
 
-                    if (Input.GetButtonDown("Jump"))
+                    if (input.Current.JumpInput)
                     {
                         if (maintainBoatOnGround && stateTimer < boatGroundTime && !takeBoatVelocity)
                         {
@@ -632,13 +654,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         
                     }
 
-                    if (Input.GetButtonDown("B"))
+                    if (input.Current.CircleInput)
                     {
                         TransitionToState(WadeState.Dash);
                     }
+
                     ShootControls();
 
-                    if (Input.GetButtonDown("RightBumper"))
+                    if (input.Current.RightBumperInput)
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
@@ -650,14 +673,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if (canDrive)
                     {
-                        if (Input.GetButtonDown("Action"))
+                        if (input.Current.TriangleInput)
                         {
 
                             TransitionToState(WadeState.Drive);
                         }
                     }
 
-                    if(Input.GetButtonDown("LeftBumper"))
+                    if(input.Current.LeftBumperInput)
                     {
                         if(lockedOn == true)
                         {
@@ -687,7 +710,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
             case WadeState.Walk:
                 {
                     slashTimer += Time.deltaTime;
-                    if (Input.GetButtonDown("Slash"))
+                    if (input.Current.SlashInput)
                     {
                         wadeSound.PlaySwoosh();
                         aimUp = true;
@@ -712,7 +735,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         footStepTimer = 0;
                     }
 
-                    if (Input.GetButtonDown("RightBumper"))
+                    if (input.Current.RightBumperInput)
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
@@ -722,7 +745,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         tempGrenadeRB.AddForce(Vector3.up * throwForceUp, ForceMode.Impulse);
                     }
 
-                    if (Input.GetButtonDown("B"))
+                    if (input.Current.CircleInput)
                     {
                         if (canShoot)
                         {
@@ -734,14 +757,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if (canDrive)
                     {
-                        if (Input.GetButtonDown("Action"))
+                        if (input.Current.TriangleInput)
                         {
  
                             TransitionToState(WadeState.Drive);
                         }
                     }
 
-                    if (Input.GetButtonDown("LeftBumper"))
+                    if (input.Current.LeftBumperInput)
                     {
                         if (lockedOn == true)
                         {
@@ -765,7 +788,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
 
 
-                    if (Input.GetButtonDown("Jump"))
+                    if (input.Current.JumpInput)
                     {
                         if (maintainBoatOnGround && stateTimer < boatGroundTime && !takeBoatVelocity)
                         {
@@ -805,7 +828,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     }
 
 
-                    if (Input.GetButtonDown("RightBumper"))
+                    if (input.Current.RightBumperInput)
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
@@ -814,7 +837,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         tempGrenadeRB.AddForce(Vector3.down * throwForceDown, ForceMode.Impulse);
 
                     }
-                    if (Input.GetButtonDown("LeftBumper"))
+                    if (input.Current.LeftBumperInput)
                     {
                         if (lockedOn == true)
                         {
@@ -839,7 +862,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         hasShotInAir = true;
                     }
 
-                    if (Input.GetButtonDown("B"))
+                    if (input.Current.CircleInput)
                     {
                         if (!hasDashed)
                         {
@@ -880,7 +903,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.LedgeGrab:
                 {
-                    if (Input.GetButtonDown("Jump"))
+                    if (input.Current.JumpInput)
                     {
                         currentJumpProfile = jumpStandard;
                         TransitionToState(WadeState.Jump);
@@ -968,12 +991,12 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     }
                     
 
-                    if (Input.GetButtonDown("Action"))
+                    if (input.Current.TriangleInput)
                     {
                         TransitionToState(WadeState.Idle);
                     }
 
-                    if (Input.GetButtonDown("Jump"))
+                    if (controls.PlayerControls.X.triggered)
                     {
                         currentJumpProfile = jumpStandard;
                         TransitionToState(WadeState.Jump);
@@ -986,7 +1009,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.Dash:
                 {
-                    if (Input.GetButtonDown("RightBumper"))
+                    if (input.Current.RightBumperInput)
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
@@ -1009,7 +1032,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     {
                         if (Motor.GroundingStatus.IsStableOnGround)
                         {
-                            if (Input.GetButtonDown("Jump"))
+                            if (controls.PlayerControls.X.triggered)
                             {
                                 hasDashed = false;
                                 moveSpeed = walkSpeed + dashEndSpeedIncrease - 2;
@@ -1243,7 +1266,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         {
             case WadeState.Idle:
                 {
-                    if (input.Current.MoveInput != Vector3.zero)
+                    if (input.Current.MoveInput != Vector2.zero)
                     {
                         TransitionToState(WadeState.Walk);
                     }
@@ -1256,7 +1279,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
             case WadeState.Walk:
                 {
                     Gravity = 0;
-                    if (input.Current.MoveInput == Vector3.zero)
+                    if (input.Current.MoveInput == Vector2.zero)
                     {
                         TransitionToState(WadeState.Idle);
                     }
@@ -1304,7 +1327,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     float jumpAccel;
                     float jumpAirSpeed;
 
-                    if (input.Current.MoveInput != Vector3.zero && !fromHit)
+                    if (input.Current.MoveInput != Vector2.zero && !fromHit)
                     {
                         if ((angle) < 50 && moveSpeed > 4)
                         {
@@ -1387,7 +1410,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                 if(currentAirProfile == slashProfile)
                     {
-                        if (input.Current.MoveInput != Vector3.zero)
+                        if (input.Current.MoveInput != Vector2.zero)
                         {
                             if (Vector3.Angle(transform.forward, LocalMovement()) < 50 && moveSpeed > 4)
                             {

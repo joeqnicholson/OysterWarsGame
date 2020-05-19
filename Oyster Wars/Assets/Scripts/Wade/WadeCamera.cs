@@ -94,24 +94,19 @@ public class WadeCamera : MonoBehaviour
         LockOnControls();
         HandleCollision();
 
-
-
-
         heading = heading % 360;
 
         if (!lockedOn)
         {
             tilt = Mathf.Clamp(tilt, 360, 410);
 
-
             if(machine.stateString != "Aim")
             {
-                if (Mathf.Abs(input.Current.MouseInput.y) > 0.01f) { tilt += input.Current.MouseInput.y * orbitSpeed * Time.deltaTime; }
+                if (Mathf.Abs(input.Current.MouseInput.y) > 0.01f) { tilt -= input.Current.MouseInput.y * orbitSpeed * Time.deltaTime; }
 
                 if (Mathf.Abs(input.Current.MouseInput.x) > 0.01f) { heading += input.Current.MouseInput.x * orbitSpeed * Time.deltaTime; }
 
             }
-
 
             if (machine.stateString == "Walk")
             {
@@ -222,17 +217,6 @@ public class WadeCamera : MonoBehaviour
     void LockOnControls()
     {
         
-
-        
-
-
-        //First Create A Vector3 With Dimensions Based On The Camera's Viewport
-
-
-
-        //If The X And Y Values Are Between 0 And 1, The Enemy Is On Screen
-
-
         if(enemyIndex > enemiesOnScreen.Count - 1)
         {
             if(enemyIndex != 0)
@@ -241,7 +225,6 @@ public class WadeCamera : MonoBehaviour
             }
             
         }
-
 
         if (machine.lockedOn && enemiesOnScreen.Count > 0)
         {
@@ -258,7 +241,6 @@ public class WadeCamera : MonoBehaviour
                 
             }
         }
-
 
         if (input.Current.MouseInput.magnitude == 0)
         {
@@ -277,7 +259,6 @@ public class WadeCamera : MonoBehaviour
             Quaternion lookRotation = Quaternion.LookRotation(lockOnRotation);
 
             lockOnInstance.transform.rotation = lookRotation;
-
         }
         else
         {

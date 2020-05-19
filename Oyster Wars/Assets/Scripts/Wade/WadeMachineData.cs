@@ -175,6 +175,7 @@ public partial class WadeMachine : MonoBehaviour
         bullet = bullets[bulletNum];
     }
 
+
     public Vector3 LocalMovement()
     {
         Vector3 intent;
@@ -190,9 +191,10 @@ public partial class WadeMachine : MonoBehaviour
 
 
 
-        intent = (camF * input.Current.MoveInput.z + camR * input.Current.MoveInput.x);
+        intent = (camF * input.Current.MoveInput.y + camR * input.Current.MoveInput.x);
 
         return intent;
+
     }
 
 
@@ -267,23 +269,17 @@ public partial class WadeMachine : MonoBehaviour
             aimHeight = 0;
         }
 
-        if (Input.GetAxisRaw("RightTrigger") != 0)
+        if (input.Current.RightTriggerInput)
         {
-            if (triggerInUse == false)
+            if (canShoot)
             {
-                if (canShoot)
-                {
-                    Instantiate(bullet, gun.position + Vector3.up * aimHeight, gun.rotation);
-                    shotTimer = 0;
-                    triggerInUse = true;
-                    wadeSound.PlayRifleShot();
-                }
+                Instantiate(bullet, gun.position + Vector3.up * aimHeight, gun.rotation);
+                shotTimer = 0;
+                triggerInUse = true;
+                wadeSound.PlayRifleShot();
             }
         }
-        if (Input.GetAxisRaw("RightTrigger") == 0)
-        {
-            triggerInUse = false;
-        }
+        
 
         
     }
@@ -342,7 +338,7 @@ public partial class WadeMachine : MonoBehaviour
 
     void DoAiming()
     {
-        if (Input.GetAxisRaw("LeftTrigger") != 0)
+        if (input.Current.LeftTriggerInput)
         {
             if (CurrentWadeState == WadeState.Idle || CurrentWadeState == WadeState.Walk)
             {
@@ -355,7 +351,7 @@ public partial class WadeMachine : MonoBehaviour
                 aiming = false;
             }
         }
-        if (Input.GetAxisRaw("LeftTrigger") == 0)
+        else
         {
             PlayerAnimator.SetBool("Aim", false);
             aiming = false;
