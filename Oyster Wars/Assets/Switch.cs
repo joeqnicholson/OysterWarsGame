@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Switch : MonoBehaviour
 {
@@ -16,7 +17,8 @@ public class Switch : MonoBehaviour
 
         if (canUse)
         {
-            if (Input.GetButtonDown("Action"))
+            Gamepad gamepad = InputSystem.GetDevice<Gamepad>();
+            if (gamepad.buttonNorth.wasPressedThisFrame)
             {
                 anim.SetBool("Switch", true);
                 doorAnim.SetBool("Rise", true);

@@ -79,15 +79,15 @@ Material:
     - _CausticsVisuals: {r: 0.202, g: 0.351, b: 0.3, a: 10}
     - _DeepColor: {r: 0.012192941, g: 0.014745939, b: 0.01886791, a: 1}
     - _HorizonColor: {r: 0.07226771, g: 0.07360976, b: 0.0754717, a: 0.92941177}
-    - _IntersectionFoamColor1: {r: 0.037157346, g: 0.046844184, b: 0.041853413, a: 0.1764706}
-    - _IntersectionFoamColor2: {r: 0.08700805, g: 0.10548241, b: 0.122197814, a: 0.14901961}
+    - _IntersectionFoamColor1: {r: 0.037157346, g: 0.04683096, b: 0.041840337, a: 0.1764706}
+    - _IntersectionFoamColor2: {r: 0.08699339, g: 0.105463795, b: 0.1221792, a: 0.14901961}
     - _IntersectionFoamMovement: {r: 0.717, g: 0, b: 0, a: 0}
     - _IntersectionFoamScale: {r: 3.9, g: 13.2, b: 0, a: 0}
     - _Refraction: {r: 1.36, g: 0.706, b: 1.36, a: 0}
     - _ShallowColor: {r: 0.039782852, g: 0.047575396, b: 0.05660379, a: 1}
-    - _ShoreFadeColor: {r: 0.10687702, g: 0.1328552, b: 0.17877036, a: 1}
-    - _SurfaceFoamColor1: {r: 0.051694103, g: 0.05254764, b: 0.06570284, a: 0.16470589}
-    - _SurfaceFoamColor2: {r: 0.079070665, g: 0.14108652, b: 0.11445873, a: 0.16862746}
+    - _ShoreFadeColor: {r: 0.10685841, g: 0.13283756, b: 0.17875272, a: 1}
+    - _SurfaceFoamColor1: {r: 0.051680475, g: 0.05253455, b: 0.06568888, a: 0.16470589}
+    - _SurfaceFoamColor2: {r: 0.079055496, g: 0.14106888, b: 0.11444012, a: 0.16862746}
     - _SurfaceFoamMovement: {r: 0.81, g: 0, b: 0, a: 0}
     - _SurfaceFoamOffset: {r: 0, g: 0, b: 0, a: 0}
     - _SurfaceFoamScale: {r: 20, g: 8.9, b: 0, a: 0}

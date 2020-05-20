@@ -6,6 +6,7 @@ using KinematicCharacterController;
 using UnityEngine.SceneManagement;
 using System;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
 public enum WadeBoatState
 {
@@ -15,7 +16,10 @@ public enum WadeBoatState
 //[RequireComponent(typeof(WadeInputs))]  
 public class WadeBoatController : MonoBehaviour, ICharacterController
 {
+    public WadeInputs input;
+    public Gamepad gamepad;
     public KinematicCharacterMotor Motor;
+    public float triggerAccel = 2;
     public bool controlled;
     public float accelerationInput;
     public float acceleration;
@@ -32,6 +36,7 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
     public float boatZrotation;
     public float boatXrotation;
     public AudioSource motor;
+
     public Vector3 currentVelocity;
     public WadeBoatState CurrentWadeBoatState { get; private set; }
 
@@ -40,10 +45,12 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
 
     private void Start()
     {
+        gamepad = InputSystem.GetDevice<Gamepad>();
+        input = GameObject.Find("Wade").GetComponent<WadeInputs>();
         TransitionToState(WadeBoatState.Idle);
         Motor.CharacterController = this;
         motor = GetComponent<AudioSource>();
-        
+
     }
 
     public void TransitionToState(WadeBoatState newState)
@@ -93,10 +100,22 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
 
         if (controlled)
         {
-            accelerationInput = Input.GetAxisRaw("RightTrigger");
-            turnInput = Input.GetAxisRaw("Horizontal");
-            motor.volume = (moveSpeed / engineSpeed + .1f) / 2;
-            motor.pitch = ((moveSpeed / engineSpeed) + .5f) / 2;
+            if (gamepad.rightTrigger.isPressed)
+            {
+                accelerationInput = 1;
+            }
+            else if (gamepad.leftTrigger.isPressed)
+            {
+                accelerationInput = -.75f;
+            }
+            else
+            {
+                accelerationInput = 0;
+            }
+            
+            turnInput = input.Current.MoveInput.x;
+            motor.volume = (Mathf.Abs(moveSpeed) / engineSpeed + .1f) / 2;
+            motor.pitch = ((Mathf.Abs(moveSpeed) / engineSpeed) + .5f) / 2;
         }
         else
         {
@@ -168,7 +187,7 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
         {
             case WadeBoatState.Idle:
                 {
-                    if(accelerationInput > 0)
+                    if(Mathf.Abs(accelerationInput) > 0)
                     {
                         TransitionToState(WadeBoatState.Move);
                     }
@@ -189,8 +208,8 @@ public class WadeBoatController : MonoBehaviour, ICharacterController
 
                     Vector3 moveDirection = new Vector3(transform.forward.x, 0, transform.forward.z);
 
-                    moveSpeed = Mathf.Lerp(moveSpeed, engineSpeed, acceleration * deltaTime);
-                    currentVelocity = Vector3.Lerp(currentVelocity, moveDirection * engineSpeed, acceleration * Time.deltaTime);
+                    moveSpeed = Mathf.Lerp(moveSpeed, engineSpeed * accelerationInput, acceleration * deltaTime);
+                    currentVelocity = Vector3.Lerp(currentVelocity, moveDirection * moveSpeed , acceleration * Time.deltaTime);
                     break;
                 }
         }

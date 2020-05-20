@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class TextMovement : MonoBehaviour
 {
+    public WadeInputs input;
     Vector2 textMove;
 
     // Start is called before the first frame update
@@ -18,8 +19,8 @@ public class TextMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        textMove = new Vector3(Input.GetAxisRaw("Mouse X"),Input.GetAxisRaw("Mouse Y"), 0);
-        textMove = Vector3.ClampMagnitude(textMove, 1.0f);
+        textMove =input.Current.MoveInput;
+        textMove = Vector2.ClampMagnitude(textMove, .5f);
 
         if(textMove.magnitude > .1)
         {
@@ -27,6 +28,6 @@ public class TextMovement : MonoBehaviour
         }
 
         RectTransform rect = GetComponent<RectTransform>();
-        rect.anchoredPosition = -textMove * 30;
+        rect.anchoredPosition = -textMove * 10;
     }
 }

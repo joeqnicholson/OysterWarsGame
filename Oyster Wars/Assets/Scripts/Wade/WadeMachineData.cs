@@ -44,6 +44,13 @@ public partial class WadeMachine : MonoBehaviour
         timeToJumpApex = .463f,
     };
 
+    private JumpProfile spinJump = new JumpProfile
+    {
+        Animation = "SpinJump",
+        JumpHeight = 7.5f,
+        timeToJumpApex = .9f,
+    };
+
     private JumpProfile boatLong = new JumpProfile
     {
         Animation = "DashLongJump",
@@ -138,8 +145,6 @@ public partial class WadeMachine : MonoBehaviour
         pearlsCount.text = pearls.ToString();
 
         cubeTarget = camObject.GetComponent<WadeCamera>().lockOnInstance.transform;
-
-        blendAngle = Vector3.Angle(transform.forward, LocalMovement()) * input.Current.MoveInput.x;
 
         angle = Vector3.Angle(transform.forward, LocalMovement());
 
@@ -269,7 +274,7 @@ public partial class WadeMachine : MonoBehaviour
             aimHeight = 0;
         }
 
-        if (input.Current.RightTriggerInput)
+        if (gamepad.rightTrigger.wasPressedThisFrame)
         {
             if (canShoot)
             {
@@ -338,7 +343,7 @@ public partial class WadeMachine : MonoBehaviour
 
     void DoAiming()
     {
-        if (input.Current.LeftTriggerInput)
+        if (gamepad.leftTrigger.isPressed)
         {
             if (CurrentWadeState == WadeState.Idle || CurrentWadeState == WadeState.Walk)
             {

@@ -164,10 +164,7 @@ public class WadeCamera : MonoBehaviour
 
         }
 
-        if (input.Current.ShootInput)
-        {
-            //CamShake(1);
-        }
+
 
         void CamShake(int duration)
         {
@@ -228,18 +225,18 @@ public class WadeCamera : MonoBehaviour
 
         if (machine.lockedOn && enemiesOnScreen.Count > 0)
         {
-            if (Input.GetKeyDown(KeyCode.X))
-            {
-                if(enemyIndex == enemiesOnScreen.Count - 1)
-                {
-                    enemyIndex = 0;
-                }
-                else
-                {
-                    enemyIndex += 1;
-                }
+            //if (Input.GetKeyDown(KeyCode.X))
+            //{
+            //    if(enemyIndex == enemiesOnScreen.Count - 1)
+            //    {
+            //        enemyIndex = 0;
+            //    }
+            //    else
+            //    {
+            //        enemyIndex += 1;
+            //    }
                 
-            }
+            //}
         }
 
         if (input.Current.MouseInput.magnitude == 0)

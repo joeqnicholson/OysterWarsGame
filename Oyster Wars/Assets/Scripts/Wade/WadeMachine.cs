@@ -19,8 +19,6 @@ public enum WadeState
 public partial class WadeMachine : MonoBehaviour, ICharacterController
 {
 
-    Controls controls;
-
     public float gunTurnz;
     public float gunTurny;
     public float gunTurnx;
@@ -192,21 +190,17 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
     public GameObject gameOver;
     public GameObject boat;
     public Transform boatDriveSpot;
+    public Gamepad gamepad;
     Transform cubeTarget;
     public bool inPause;
     public string stateString;
     public float timeScale;
     Vector2 move;
-
-
-    private void Awake()
-    {
-        controls = new Controls();
-    }
-
+    float turning;
 
     private void Start()
     {
+        gamepad = InputSystem.GetDevice<Gamepad>();
         bullet = bullets[0];
         health = startHealth;
         canShoot = true;
@@ -297,8 +291,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.Jump:
                 {
+                    turning = transform.localEulerAngles.y;
 
-                    
                     if (Motor.GroundingStatus.IsStableOnGround)
                     {
                         if (!takeBoatVelocity)
@@ -328,6 +322,18 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         lastStablePosition = transform.position + (transform.forward * -2) + (Vector3.up * 12);
                         lastStableRotation = transform.rotation;
                     }
+
+                    if (fromState == WadeState.Slide)
+                    {
+                        moveSpeed = -turnAroundMaxSpeed + 10;
+                        fromSlide = true;
+                        Motor.SetRotation(Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y + 180, transform.eulerAngles.x));
+                    }
+                    else
+                    {
+                        fromSlide = false;
+                    }
+
 
                     PlayerAnimator.SetBool(currentJumpProfile.Animation, true);
 
@@ -562,22 +568,12 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
         }
     }
 
-    void OnEnable()
-    {
-        controls.PlayerControls.Enable();
-    }
-
-    void OnDisable()
-    {
-        controls.PlayerControls.Disable();
-    }
-
     public void Update()
     {
 
-        if (!inPause)
+        if (!inPause && CurrentWadeState != WadeState.Death)
         {
-            if (Input.GetButtonDown("Start"))
+            if (gamepad.startButton.wasPressedThisFrame)
             {
                 GameObject pausemenu = Instantiate(pause);
                 inPause = true;
@@ -610,7 +606,8 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     slashTimer += Time.deltaTime;
 
-                    if (input.Current.SlashInput)
+                    if (gamepad.buttonWest.wasPressedThisFrame)
+
                     {
                         wadeSound.PlaySwoosh();
                         aimUp = true;
@@ -618,7 +615,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         PlayerAnimator.SetBool("Slash", true);
                     }
 
-                    if (!controls.PlayerControls.CircleHold.triggered)
+                    if (!gamepad.buttonWest.isPressed)
                     {
                         print("WOOHOO");
                         if (slashTimer > slashTime)
@@ -639,7 +636,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
 
 
-                    if (input.Current.JumpInput)
+                    if (gamepad.buttonSouth.wasPressedThisFrame)
                     {
                         if (maintainBoatOnGround && stateTimer < boatGroundTime && !takeBoatVelocity)
                         {
@@ -654,14 +651,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         
                     }
 
-                    if (input.Current.CircleInput)
+                    if (gamepad.buttonEast.wasPressedThisFrame)
                     {
                         TransitionToState(WadeState.Dash);
                     }
 
                     ShootControls();
 
-                    if (input.Current.RightBumperInput)
+                    if (gamepad.rightShoulder.wasPressedThisFrame)
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
@@ -673,14 +670,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if (canDrive)
                     {
-                        if (input.Current.TriangleInput)
+                        if (gamepad.buttonNorth.wasPressedThisFrame)
                         {
 
                             TransitionToState(WadeState.Drive);
                         }
                     }
 
-                    if(input.Current.LeftBumperInput)
+                    if(gamepad.leftShoulder.wasPressedThisFrame)
                     {
                         if(lockedOn == true)
                         {
@@ -710,7 +707,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
             case WadeState.Walk:
                 {
                     slashTimer += Time.deltaTime;
-                    if (input.Current.SlashInput)
+                    if (gamepad.buttonWest.wasPressedThisFrame)
                     {
                         wadeSound.PlaySwoosh();
                         aimUp = true;
@@ -718,7 +715,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         PlayerAnimator.SetBool("Slash", true);
                     }
 
-                    if (!Input.GetButton("Slash"))
+                    if (!gamepad.buttonWest.isPressed)
                     {
                         if (slashTimer > slashTime)
                         {
@@ -735,7 +732,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         footStepTimer = 0;
                     }
 
-                    if (input.Current.RightBumperInput)
+                    if (gamepad.rightShoulder.wasPressedThisFrame)
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         Rigidbody tempGrenadeRB = tempGrenade.GetComponent<Rigidbody>();
@@ -745,7 +742,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         tempGrenadeRB.AddForce(Vector3.up * throwForceUp, ForceMode.Impulse);
                     }
 
-                    if (input.Current.CircleInput)
+                    if (gamepad.buttonEast.wasPressedThisFrame)
                     {
                         if (canShoot)
                         {
@@ -757,14 +754,14 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if (canDrive)
                     {
-                        if (input.Current.TriangleInput)
+                        if (gamepad.buttonNorth.wasPressedThisFrame)
                         {
  
                             TransitionToState(WadeState.Drive);
                         }
                     }
 
-                    if (input.Current.LeftBumperInput)
+                    if (gamepad.leftShoulder.wasPressedThisFrame)
                     {
                         if (lockedOn == true)
                         {
@@ -788,7 +785,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
 
 
-                    if (input.Current.JumpInput)
+                    if (gamepad.buttonSouth.wasPressedThisFrame)
                     {
                         if (maintainBoatOnGround && stateTimer < boatGroundTime && !takeBoatVelocity)
                         {
@@ -814,21 +811,30 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.Jump:
                 {
+                    if(currentJumpProfile == spinJump)
+                    {
+                        
+
+                        PlayerMesh.transform.rotation = Quaternion.Euler(transform.localEulerAngles.x, turning, transform.localEulerAngles.z);
+                        turning += 6 * Time.deltaTime;
+                    }
+
                     if (currentJumpProfile.CanControlHeight)
                     {
-                        if (Input.GetButtonUp("Jump") && verticalMoveSpeed > minJumpVelocity)
+                        if (gamepad.buttonSouth.wasReleasedThisFrame && verticalMoveSpeed > minJumpVelocity)
                         {
                             verticalMoveSpeed = minJumpVelocity;
                         }
 
-                        if (currentJumpProfile == frontFlip && Input.GetAxisRaw("RightTrigger") < 0.1f && verticalMoveSpeed > minJumpVelocity)
+                        if (currentJumpProfile == frontFlip && gamepad.rightTrigger.wasReleasedThisFrame && verticalMoveSpeed > minJumpVelocity)
                         {
                             verticalMoveSpeed = minJumpVelocity;
                         }
                     }
+                    
 
 
-                    if (input.Current.RightBumperInput)
+                    if (gamepad.rightShoulder.wasPressedThisFrame)
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
@@ -837,7 +843,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         tempGrenadeRB.AddForce(Vector3.down * throwForceDown, ForceMode.Impulse);
 
                     }
-                    if (input.Current.LeftBumperInput)
+                    if (gamepad.leftShoulder.wasPressedThisFrame)
                     {
                         if (lockedOn == true)
                         {
@@ -862,7 +868,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         hasShotInAir = true;
                     }
 
-                    if (input.Current.CircleInput)
+                    if (gamepad.buttonEast.wasPressedThisFrame)
                     {
                         if (!hasDashed)
                         {
@@ -870,7 +876,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         }
                     }
 
-                    if (input.Current.SlashInput)
+                    if (gamepad.buttonWest.wasPressedThisFrame)
                     {
                         currentAirProfile = slashProfile;
                         TransitionToState(WadeState.AirAction);
@@ -890,7 +896,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         {
                             TransitionToState(WadeState.WallSlide);
                         }
-                        if (input.Current.JumpInput)
+                        if (gamepad.buttonSouth.wasPressedThisFrame)
                         {
                             currentJumpProfile = jumpWall;
                             TransitionToState(WadeState.WallSlide);
@@ -903,7 +909,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.LedgeGrab:
                 {
-                    if (input.Current.JumpInput)
+                    if (gamepad.buttonSouth.wasPressedThisFrame)
                     {
                         currentJumpProfile = jumpStandard;
                         TransitionToState(WadeState.Jump);
@@ -919,7 +925,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         TransitionToState(WadeState.LedgeGrab);
                     }
 
-                    if (input.Current.JumpInput)
+                    if (gamepad.buttonSouth.wasPressedThisFrame)
                     {
                         currentJumpProfile = jumpWall;
                         TransitionToState(WadeState.Jump);
@@ -929,7 +935,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     {
                         wallInputTimer -= 10 * Time.deltaTime;
 
-                        if (input.Current.JumpInput)
+                        if (gamepad.buttonSouth.wasPressedThisFrame)
                         {
                             currentJumpProfile = jumpWall;
                             TransitionToState(WadeState.Jump);
@@ -949,22 +955,26 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 {
                     if (currentAirProfile == slashProfile)
                     {
+                        if (gamepad.buttonEast.wasPressedThisFrame)
+                        {
+                            if (canShoot)
+                            {
+                                TransitionToState(WadeState.Dash);
+                            }
+                        }
+
                         slashInteruptionTimer += 1 * Time.deltaTime;
                         slamTimer += 1 * Time.deltaTime;
 
-                        if (Input.GetAxisRaw("RightTrigger") != 0)
+                        if (gamepad.rightTrigger.wasPressedThisFrame)
                         {
-                            if (!triggerInUse && !hasFlipped)
+                            if (!hasFlipped)
                             {
                                 currentJumpProfile = frontFlip;
                                 TransitionToState(WadeState.Jump);
 
                                 triggerInUse = true;
                             }
-                        }
-                        if (Input.GetAxisRaw("RightTrigger") == 0)
-                        {
-                            triggerInUse = false;
                         }
                         if(stateTimer > .2f)
                         {
@@ -991,12 +1001,12 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     }
                     
 
-                    if (input.Current.TriangleInput)
+                    if (gamepad.buttonNorth.wasPressedThisFrame)
                     {
                         TransitionToState(WadeState.Idle);
                     }
 
-                    if (controls.PlayerControls.X.triggered)
+                    if (gamepad.buttonSouth.wasPressedThisFrame)
                     {
                         currentJumpProfile = jumpStandard;
                         TransitionToState(WadeState.Jump);
@@ -1009,7 +1019,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                 }
             case WadeState.Dash:
                 {
-                    if (input.Current.RightBumperInput)
+                    if (gamepad.rightShoulder.wasPressedThisFrame)
                     {
                         GameObject tempGrenade = Instantiate(grenade, transform.position + transform.forward + Vector3.up, transform.rotation) as GameObject;
                         CapsuleCollider grenadeCollider = tempGrenade.GetComponent<CapsuleCollider>();
@@ -1020,9 +1030,9 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
 
                     if (dashTimer > dashLength)
                     {
-                        if (input.Current.SlashInput)
+                        if (gamepad.buttonWest.wasPressedThisFrame)
                         {
-
+                            Gravity = -fallGravity;
                             currentAirProfile = slashProfile;
                             TransitionToState(WadeState.AirAction);
                         }
@@ -1032,7 +1042,7 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     {
                         if (Motor.GroundingStatus.IsStableOnGround)
                         {
-                            if (controls.PlayerControls.X.triggered)
+                            if (gamepad.buttonSouth.wasPressedThisFrame)
                             {
                                 hasDashed = false;
                                 moveSpeed = walkSpeed + dashEndSpeedIncrease - 2;
@@ -1043,24 +1053,26 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                     }
 
                     
-                        if (Motor.GroundingStatus.IsStableOnGround)
+                    if (Motor.GroundingStatus.IsStableOnGround)
+                    {
+                        if (moveSpeed <= walkSpeed + 0.1 || gamepad.buttonEast.wasPressedThisFrame)
                         {
-                            if (moveSpeed <= walkSpeed + 0.1 || Input.GetButtonDown("B"))
-                            {
                             moveSpeed = walkSpeed;
-                                TransitionToState(WadeState.Idle);
-                            }
+                            TransitionToState(WadeState.Idle);
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (moveSpeed <= walkSpeed + 3 || gamepad.buttonEast.wasPressedThisFrame)
                         {
-                            if (moveSpeed <= walkSpeed + 3 || Input.GetButtonDown("B"))
-                            {
                             moveSpeed = walkSpeed + 3;
-                                currentJumpProfile = groundFall;
-                                TransitionToState(WadeState.Jump);
-                            }
+                            currentJumpProfile = groundFall;
+                            TransitionToState(WadeState.Jump);
                         }
+                    }
+
                     break;
+
                 }
             case WadeState.Hit:
                 {
@@ -1084,6 +1096,18 @@ public partial class WadeMachine : MonoBehaviour, ICharacterController
                         }
                     }
                    
+                    break;
+                }
+            case WadeState.Slide:
+                {
+
+                    if (gamepad.buttonSouth.wasPressedThisFrame)
+                    {
+                        currentJumpProfile = jumpStandard;
+                        TransitionToState(WadeState.Jump);
+                    }
+                    
+
                     break;
                 }
             case WadeState.Death:

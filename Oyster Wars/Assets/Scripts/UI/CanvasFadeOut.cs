@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CanvasFadeOut : MonoBehaviour
 {
@@ -48,7 +49,8 @@ public class CanvasFadeOut : MonoBehaviour
 
         if(im.alpha == 0)
         {
-            if (Input.GetButtonDown("Start"))
+            Gamepad gamepad = InputSystem.GetDevice<Gamepad>();
+            if (gamepad.startButton.wasPressedThisFrame)
             {
                 start = true;
             }
