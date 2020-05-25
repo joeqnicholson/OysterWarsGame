@@ -1,2 +1,2 @@
 # OysterWarsGame
-this is a gme
+This is a game.
